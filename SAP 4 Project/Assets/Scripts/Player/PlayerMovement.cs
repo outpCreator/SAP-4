@@ -3,11 +3,17 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Stats")]
+    public float health = 100;
+
     [Header("Movement")]
     [SerializeField] float moveSpeed;
+    [SerializeField] float rotationSpeed;
+    public Transform cameraTransform;
 
     // Components
     CharacterController charController;
+   
 
     [Header("Potion")]
     [SerializeField] float baseDamage;
@@ -54,12 +60,23 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        float moveX = moveInput.x;
-        float moveZ = moveInput.y;
+        Vector3 camForward = cameraTransform.forward;
+        Vector3 camRight = cameraTransform.right;
 
-        Vector3 moveDirection = new Vector3(moveX, 0, moveZ) * moveSpeed;
+        camForward.y = 0f;
+        camRight.y = 0f;
+        camForward.Normalize();
+        camRight.Normalize();
 
-        charController.SimpleMove(moveDirection);
+        Vector3 moveDirection = camForward * moveInput.y + camRight * moveInput.x;
+
+        charController.SimpleMove(moveDirection * moveSpeed);
+
+        if (moveDirection.magnitude > 0.1f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
     }
 
     void Potion()
