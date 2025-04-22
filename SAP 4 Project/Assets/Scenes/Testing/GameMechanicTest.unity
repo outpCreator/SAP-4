@@ -639,7 +639,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 100
   moveSpeed: 8
-  rotationSpeed: 10
+  rotationSpeed: 17
   cameraTransform: {fileID: 330585546}
   baseDamage: 0
   moveInput: {x: 0, y: 0}
@@ -724,7 +724,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab048cdd5c10351489c336b9c998c01f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camSpeed: 100
+  camSpeed: 80
   cam: {fileID: 330585546}
   pivot: {fileID: 37522529}
 --- !u!43 &617438053
