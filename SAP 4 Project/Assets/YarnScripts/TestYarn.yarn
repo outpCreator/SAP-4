@@ -1,0 +1,43 @@
+﻿title: Start
+tags:
+---
+Shop Owner: Hello Friend. 
+Shop Owner: Would you like to take a look at my Potions?
+-> Yes!
+	Shop Owner: They're all legaly brewed... i promise!
+	<<jump ShopDialogue>>
+-> No!	
+	Shop Owner: That's unfortunate.
+	<<stop>>
+===
+
+title: ShopDialogue
+---
+<<declare $coins = 50>>
+<<declare $potion_count = 0>>
+<<declare $empty_bottle = 0>>
+
+You have {$coins} coins, {$empty_bottle} bottles and {$potion_count} potions.
+
+-> Buy potion (10 coins)
+	<<if $coins >= 10>>
+		Buying a potion.
+		<<set $coins -= 10>>
+		<<set $potion_count += 1>>
+	<<else>>
+		You can't afford this. Idiot!
+	<<endif>>
+-> Buy empty bottle (2 coins)
+	<<if $coins >= 2>>
+		Buying a bottle.
+		<<set $coins -= 2>>
+		<<set $empty_bottle +=1>>
+	<<else>>
+		You can't afford this. Dumbass!
+	<<endif>>
+-> Leave shop.
+	Shop Owner: Hope to meet you again, friend.
+	<<stop>>
+
+<<jump ShopDialogue>>
+===
