@@ -236,7 +236,11 @@
                     "id": "8c8e490b-c610-4785-884f-f04217b23ca4",
                     "path": "<Mouse>/delta",
                     "interactions": "",
+<<<<<<< Updated upstream
                     "processors": "ScaleVector2(x=0.05,y=0.05)",
+=======
+                    "processors": "ScaleVector2(x=0.09,y=0.09)",
+>>>>>>> Stashed changes
                     "groups": ";Keyboard&Mouse;Touch",
                     "action": "Look",
                     "isComposite": false,
