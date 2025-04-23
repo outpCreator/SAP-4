@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,20 +8,26 @@ public class SceneLoader : MonoBehaviour
     const string gameScene = "Game";
     public static SceneLoader Instance { get; private set; }
 
+    string pendingEntryID;
+
     private void Awake()
     {
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
-    public void SwitchScene(string scene)
+    public void SwitchScene(string scene, string entryID)
     {
-        SwitchSceneRoutine(scene);
+        pendingEntryID = entryID;
+        StartCoroutine(SwitchSceneRoutine(scene));
     }
 
     List<Scene> scenesToUnload = new List<Scene>();
     IEnumerator SwitchSceneRoutine(string sceneName)
     {
+        yield return ScreenFader.Instance != null? 
+            ScreenFader.Instance.FadeToBlack() : null;
+
         scenesToUnload ??= new List<Scene>(2);
         scenesToUnload.Clear();
         for (int i = 0; i < SceneManager.sceneCount; i++)
@@ -39,7 +45,17 @@ public class SceneLoader : MonoBehaviour
             yield return SceneManager.UnloadSceneAsync(scene);
         }
 
-        yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+        var loadOperation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+        yield return loadOperation;
+
+        Scene loadedScene = SceneManager.GetSceneByName(sceneName);
+        if (loadedScene.IsValid())
+            SceneManager.SetActiveScene(loadedScene);
+
+        yield return new WaitForEndOfFrame();
+
+        if (ScreenFader.Instance != null)
+            yield return ScreenFader.Instance.FadeFromBlack();
     }
 
     [RuntimeInitializeOnLoadMethod]
