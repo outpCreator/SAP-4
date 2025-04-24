@@ -536,7 +536,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8848156643980238128}
   - component: {fileID: 3930384500480454776}
-  - component: {fileID: 5804094497463726115}
   m_Layer: 0
   m_Name: Player
   m_TagString: PlayerRoot
@@ -574,15 +573,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lockOnStart: 1
---- !u!114 &5804094497463726115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6674168550340083599}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 710ee823aab51b642a24f51848569d9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

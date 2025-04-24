@@ -88,4 +88,12 @@ public class PlayerMovement : MonoBehaviour
     {
 
     }
+
+    public void OnAfterSpawn(Vector3 position, Quaternion rotation)
+    {
+        charController.enabled = false;
+        transform.position = position;
+        transform.rotation = rotation;
+        charController.enabled = true;
+    }
 }

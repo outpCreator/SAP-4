@@ -714,6 +714,14 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 2345283409253211358, guid: fd3f0424ee069004c93f1b1f83877153, type: 3}
+      propertyPath: m_Name
+      value: WoodsFromHub
+      objectReference: {fileID: 0}
+    - target: {fileID: 2345283409253211358, guid: fd3f0424ee069004c93f1b1f83877153, type: 3}
+      propertyPath: m_TagString
+      value: SpawnPoint
+      objectReference: {fileID: 0}
     - target: {fileID: 2754690524056469926, guid: fd3f0424ee069004c93f1b1f83877153, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -764,7 +772,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4920664263399799008, guid: fd3f0424ee069004c93f1b1f83877153, type: 3}
       propertyPath: m_Name
-      value: LoadSceneTrigger
+      value: WoodsToHub
       objectReference: {fileID: 0}
     - target: {fileID: 5738458315971931433, guid: fd3f0424ee069004c93f1b1f83877153, type: 3}
       propertyPath: entryID

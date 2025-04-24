@@ -14,17 +14,17 @@ public class ScreenFader : MonoBehaviour
         Instance = this;
     }
 
-    public IEnumerator FadeToBlack(System.Action onComplete = null)
+    public IEnumerator FadeToBlack()
     {
-        yield return Fade(1f, onComplete);
+        yield return Fade(1f);
     }
 
-    public IEnumerator FadeFromBlack(System.Action onComplete = null)
+    public IEnumerator FadeFromBlack()
     {
-        yield return Fade(0f, onComplete);
+        yield return Fade(0f);
     }
 
-    IEnumerator Fade(float targetAlpha, System.Action onComplete)
+    IEnumerator Fade(float targetAlpha)
     {
         fadeImage.raycastTarget = true;
 
@@ -41,7 +41,5 @@ public class ScreenFader : MonoBehaviour
 
         fadeImage.color = new Color(0f, 0f, 0f, targetAlpha);
         fadeImage.raycastTarget = targetAlpha == 1f;
-
-        onComplete?.Invoke();
     }
 }
