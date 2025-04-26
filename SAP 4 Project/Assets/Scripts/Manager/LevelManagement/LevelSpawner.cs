@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelSpawner : MonoBehaviour
@@ -7,9 +8,8 @@ public class LevelSpawner : MonoBehaviour
     public Transform roomAnker;
 
     [Header("Rooms")]
-    public GameObject[] rooms;
-
-    float tileSize = 20f;
+    public List<GameObject> rooms = new List<GameObject>();
+    public GameObject[] availableRooms;
 
     private void Awake()
     {
@@ -18,14 +18,27 @@ public class LevelSpawner : MonoBehaviour
 
     public void SpawnNextRoom(Vector3 spawnPosition)
     {
-        foreach (var room in rooms)
-        {
-            int roomNumber = Random.Range(0, rooms.Length);
+        // Get instance of current room
 
-            GameObject roomToSpawn = rooms[roomNumber];
-            GameObject activeRoom = Instantiate(roomToSpawn, spawnPosition, Quaternion.identity);
+        // Check for fixed Room
 
-            roomAnker = activeRoom.GetComponentInChildren<RoomAnker>().transform;
-        }
+        // Check for grid space
+
+        // Get spawnDirection
+
+        // Randomly select room and spawn
+
+        // Set current room to previouse room
+
+        // Set anker of current room
+
+        // Move previouse room to DeletePreviouseRoom()
+    }
+
+    void DeletePreviouseRoom(GameObject previouseRoom)
+    {
+        // Check for fixed room
+
+        // Delete room
     }
 }
