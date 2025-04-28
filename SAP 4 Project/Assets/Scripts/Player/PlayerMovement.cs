@@ -11,6 +11,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float rotationSpeed;
     public Transform cameraTransform;
 
+    bool isFrozen = false;
+    Vector3 moveDirection = Vector3.zero;
+
     // Components
     CharacterController charController;
    
@@ -51,6 +54,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (isFrozen) return;
+
         Move();
 
         if (potionInput) Potion();
@@ -68,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
         camForward.Normalize();
         camRight.Normalize();
 
-        Vector3 moveDirection = camForward * moveInput.y + camRight * moveInput.x;
+        moveDirection = camForward * moveInput.y + camRight * moveInput.x;
 
         charController.SimpleMove(moveDirection * moveSpeed);
 
@@ -77,6 +82,22 @@ public class PlayerMovement : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
+    }
+
+    public void FreezeMovement(bool freeze)
+    {
+        isFrozen = freeze;
+        if (freeze && charController != null)
+        {
+            charController.velocity.Set(0, 0, 0);
+        }
+    }
+
+    public void AlignMoveDirection(Quaternion containerRotation)
+    {
+        moveDirection = containerRotation * Vector3.forward;
+        moveDirection.y = 0f;
+        moveDirection.Normalize();
     }
 
     void Potion()

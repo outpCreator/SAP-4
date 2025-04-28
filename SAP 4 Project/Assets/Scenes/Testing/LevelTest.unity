@@ -148,7 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6a8604da9b200c4d8ab6916ead7527b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomPrefab: {fileID: 1862561490422721875, guid: 1b28d7e94648f864f96ee098a3fef017, type: 3}
+  roomPrefabs:
+  - {fileID: 1862561490422721875, guid: 1b28d7e94648f864f96ee098a3fef017, type: 3}
   startRoomPrefab: {fileID: 8040090346732638718, guid: 122326b2631488a4da160df1bd532363, type: 3}
   bossRoomPrefab: {fileID: 5379223035050867576, guid: b7fa7b3b8f7632443896815492b60e7a, type: 3}
 --- !u!4 &881894923
@@ -196,7 +197,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   completedRooms: 0
-  fixedRooms: 0
+  FixedRooms: 0
   gridSize: 5
   roomSpacing: 20
 --- !u!4 &926124451

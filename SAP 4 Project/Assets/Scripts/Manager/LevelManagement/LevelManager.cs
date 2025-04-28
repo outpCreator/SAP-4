@@ -7,13 +7,17 @@ public class LevelManager : MonoBehaviour
 
     [Header("Rooms")]
     public int completedRooms = 0;
-    public int fixedRooms = 0;
+    public int FixedRooms = 0;
+
+    Vector2Int currentRoomCoord;
+    public Vector2Int CurrentRoomCoord => currentRoomCoord;
 
     [Header("Grid")]
     public int gridSize = 5;
     public float roomSpacing = 20f;
 
-    private Dictionary<Vector2Int, Vector3> roomPositions = new Dictionary<Vector2Int, Vector3>();
+    Dictionary<Vector2Int, Vector3> roomPositions = new Dictionary<Vector2Int, Vector3>();
+    Dictionary<Vector2Int, GameObject> spawnedRooms = new Dictionary<Vector2Int, GameObject>();
 
     private void Awake()
     {
@@ -22,7 +26,7 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
-        fixedRooms = Mathf.Clamp(fixedRooms, 0, 2);
+        FixedRooms = Mathf.Clamp(FixedRooms, 0, 2);
     }
 
     public void InitLevel()
@@ -58,6 +62,33 @@ public class LevelManager : MonoBehaviour
             Debug.LogWarning($"WorldPosition für {gridCoord} NICHT gefunden!");
             return Vector3.zero;
         }
+    }
+
+    public Dictionary<Vector2Int, Vector3> GetAllRoomPositions()
+    {
+        return roomPositions;
+    }
+
+    public void SetCurrentRoomCoord(Vector2Int newCoord)
+    {
+        currentRoomCoord = newCoord;
+    }
+
+    public bool IsValidRoomCoord(Vector2Int coord)
+    {
+        int half = gridSize / 2;
+
+        if (coord.x < -half || coord.x > half || coord.y < -half || coord.y > half)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool HasRoomAt(Vector2Int coord)
+    {
+        return spawnedRooms.ContainsKey(coord);
     }
 
     public List<Vector2Int> GetEdgePositions()
@@ -124,23 +155,53 @@ public class LevelManager : MonoBehaviour
         return centers[Random.Range(0, centers.Count)];
     }
 
-    public Dictionary<Vector2Int, Vector3> GetAllRoomPositions()
+    public Vector2Int GetDirectionOffset(DoorTrigger.Direction dir)
     {
-        return roomPositions;
+        switch (dir)
+        {
+            case DoorTrigger.Direction.North:
+                return new Vector2Int(0, 1);
+            case DoorTrigger.Direction.South:
+                return new Vector2Int(0, -1);
+            case DoorTrigger.Direction.East:
+                return new Vector2Int(1, 0);
+            case DoorTrigger.Direction.West:
+                return new Vector2Int(-1, 0);
+            default:
+                return Vector2Int.zero;
+        }
     }
 
-    Dictionary<Vector2Int, GameObject> spawnedRooms = new Dictionary<Vector2Int, GameObject>();
+    public Vector2Int GetNewRoomPosition(Vector2Int currentCoord, DoorTrigger.Direction direction)
+    {
+        Vector2Int offset = GetDirectionOffset(direction);
+        return currentCoord + offset;
+    }
+
     public void RegisterRoomInstance(Vector2Int gridCoord, GameObject roomInstance)
     {
         if (!spawnedRooms.ContainsKey(gridCoord))
         {
-            spawnedRooms.Add(gridCoord, roomInstance);
+            spawnedRooms.Add(gridCoord, roomInstance); // <-- Vielleicht noch transform.position!!
         }
     }
 
-    public bool HasRoomAt(Vector2Int coord)
+    public void RemoveRoomInstance(Vector2Int gridCoord, GameObject roomInstance)
     {
-        return spawnedRooms.ContainsKey(coord);
+        if (spawnedRooms.ContainsKey(gridCoord))
+        {
+            spawnedRooms.Remove(gridCoord);
+        }
+    }
+
+    public GameObject GetRoomInstance(Vector2Int coord)
+    {
+        if (spawnedRooms.TryGetValue(coord, out GameObject roomInstance))
+        {
+            return roomInstance;
+        }
+
+        return null;
     }
 
     public Quaternion GetRotation(Vector2Int coord)
@@ -148,33 +209,28 @@ public class LevelManager : MonoBehaviour
         int half = gridSize / 2;
 
         if (coord.y == half)
-        {
             return Quaternion.Euler(0f, 180f, 0f);
-        }
         else if (coord.y == -half)
-        {
             return Quaternion.Euler(0f, 0f, 0f);
-        }
         else if (coord.x == half)
-        {
             return Quaternion.Euler(0f, -90f, 0f);
-        }
         else if (coord.x == -half)
-        {
             return Quaternion.Euler(0f, 90f, 0f);
-        }
 
         return Quaternion.identity;
     }
 
-    private void Update()
+    HashSet<Vector2Int> fixedRooms = new HashSet<Vector2Int>();
+    public bool IsRoomFixed(Vector2Int coord)
     {
-        //foreach(GameObject room in spawnedRooms)
-        //{
-        //    if(room.position == Vector2Int.zero)
-        //    {
+        return fixedRooms.Contains(coord);
+    }
 
-        //    }
-        //}
+    public void AddFixedRoom(Vector2Int coord)
+    {
+        if (!fixedRooms.Contains(coord))
+        {
+            fixedRooms.Add(coord);
+        }
     }
 }

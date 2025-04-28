@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -7,9 +8,11 @@ public class LevelSpawner : MonoBehaviour
     public static LevelSpawner Instance;
 
     [Header("Rooms")]
-    public GameObject roomPrefab;
+    public GameObject[] roomPrefabs;
     public GameObject startRoomPrefab;
     public GameObject bossRoomPrefab;
+
+    bool transitioning = false;
 
     private void Awake()
     {
@@ -34,6 +37,9 @@ public class LevelSpawner : MonoBehaviour
         startRoom.name = $"Start Room ({startCoord.x}, {startCoord.y})";
         LevelManager.Instance.RegisterRoomInstance(startCoord, startRoom);
 
+        LevelManager.Instance.SetCurrentRoomCoord(startCoord);
+        LevelManager.Instance.AddFixedRoom(startCoord);
+
         Transform roomAnchor = startRoom.transform.Find("RoomAnchor");
         if (PlayerManager.Instance != null)
         {
@@ -52,53 +58,85 @@ public class LevelSpawner : MonoBehaviour
         bossRoom.name = $"Boss Room ({bossCoord.x}, {bossCoord.y})";
         LevelManager.Instance.RegisterRoomInstance(bossCoord, bossRoom);
 
-        //SpawnNormalRooms(startCoord, bossCoord);
+        LevelManager.Instance.AddFixedRoom(bossCoord);
     }
 
-    void SpawnNormalRooms(Vector2Int startCoord, Vector2Int bossCoord)
+    public void SpawnNextRoom(DoorTrigger.Direction doorDirection)
     {
-        var allPositions = LevelManager.Instance.GetAllRoomPositions();
+        if (transitioning)
+            return;
 
-        foreach (var kvp in allPositions)
+        transitioning = true;
+
+        Vector2Int currentRoomCoord = LevelManager.Instance.CurrentRoomCoord;
+        Vector2Int newRoomCoord = LevelManager.Instance.GetNewRoomPosition(currentRoomCoord, doorDirection);
+        Debug.Log($"[LevelSpawner] Moving from {currentRoomCoord} to {newRoomCoord} through {doorDirection} door.");
+
+        if (!LevelManager.Instance.IsValidRoomCoord(newRoomCoord))
         {
-            Vector2Int coord = kvp.Key;
-
-            if (coord == startCoord || coord == bossCoord) continue;
-
-            if (LevelManager.Instance.HasRoomAt(coord)) continue;
-
-            Vector3 pos = kvp.Value;
-            GameObject normalRoom = Instantiate(roomPrefab, pos, Quaternion.identity, this.transform);
-            normalRoom.name = $"Normal Room ({coord.x}, {coord.y})";
-            LevelManager.Instance.RegisterRoomInstance(coord, normalRoom);
+            StartCoroutine(TransitionDelay());
+            return;
         }
+
+        if (LevelManager.Instance.HasRoomAt(newRoomCoord))
+        {
+            bool isFixedRoom = LevelManager.Instance.IsRoomFixed(newRoomCoord);
+            if (isFixedRoom)
+            {
+                LevelManager.Instance.SetCurrentRoomCoord(newRoomCoord);
+
+                GameObject fixedRoomInstance = LevelManager.Instance.GetRoomInstance(newRoomCoord);
+                if (fixedRoomInstance != null)
+                {
+                    Transform NewRoomAnchor = fixedRoomInstance.transform.Find("RoomAnchor").gameObject.transform;
+                    PlayerManager.Instance.MovePlayerContainer(NewRoomAnchor, doorDirection);
+                }
+
+                GameObject oldRoomInstance = LevelManager.Instance.GetRoomInstance(currentRoomCoord);
+                if (oldRoomInstance != null && !LevelManager.Instance.IsRoomFixed(currentRoomCoord))
+                {
+                    Destroy(oldRoomInstance);
+                    LevelManager.Instance.RemoveRoomInstance(currentRoomCoord, oldRoomInstance);
+                }
+
+                StartCoroutine(TransitionDelay());
+                return;
+            }
+            else
+            {
+                Debug.LogWarning($"[LevelSpawner] Warning: Overwriting non-fixed room at {newRoomCoord}!");
+            }
+        }
+        
+        Vector3 roomPos = LevelManager.Instance.GetWorldPosition(newRoomCoord);
+        Quaternion roomRot = LevelManager.Instance.GetRotation(newRoomCoord);
+
+        int randomRoom = Random.Range(0, roomPrefabs.Length);
+
+        GameObject newRoom = Instantiate(roomPrefabs[randomRoom], roomPos, roomRot, this.transform);
+        newRoom.name = $"Room ({newRoomCoord.x}, {newRoomCoord.y})";
+
+        Transform roomAnchor = newRoom.transform.Find("RoomAnchor").gameObject.transform;
+
+        PlayerManager.Instance.MovePlayerContainer(roomAnchor, doorDirection);
+
+        LevelManager.Instance.RegisterRoomInstance(newRoomCoord, newRoom);
+
+        GameObject roomToDelete = LevelManager.Instance.GetRoomInstance(currentRoomCoord);
+        if (roomToDelete != null && !LevelManager.Instance.IsRoomFixed(currentRoomCoord))
+        {
+            Destroy(roomToDelete);
+            LevelManager.Instance.RemoveRoomInstance(currentRoomCoord, roomToDelete);
+        }
+
+        LevelManager.Instance.SetCurrentRoomCoord(newRoomCoord);
+
+        StartCoroutine(TransitionDelay());
     }
 
-    public void SpawnNextRoom(Vector3 spawnPosition)
+    IEnumerator TransitionDelay()
     {
-        // Get instance of current room
-
-        // Check for fixed Room
-
-        // Check for grid space
-
-        // Get spawnDirection
-
-        // Randomly select room and spawn
-
-        // Set current room to previouse room
-
-        // Set anker of current room
-
-        // Move previouse room to DeletePreviouseRoom()
-    }
-
-    
-
-    void DeletePreviouseRoom(GameObject previouseRoom)
-    {
-        // Check for fixed room
-
-        // Delete room
+        yield return new WaitForSeconds(0.1f);
+        transitioning = false;
     }
 }
