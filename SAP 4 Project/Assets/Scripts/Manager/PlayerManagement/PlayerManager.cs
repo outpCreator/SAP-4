@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -11,6 +10,10 @@ public class PlayerManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+    }
+
+    private void Start()
+    {
         playerInstance = Instantiate(playerPrefab);
 
         SceneLoader.Instance.onSceneChanged.AddListener(OnSceneLoaded);
@@ -22,7 +25,8 @@ public class PlayerManager : MonoBehaviour
         if(spawnPoint)
         {
             playerInstance.GetComponentInChildren<PlayerMovement>().OnAfterSpawn(spawnPoint.transform.position, spawnPoint.transform.rotation);
-        } else
+        } 
+        else
         {
             Debug.LogError("Spawn point missing! Please add one.");
         }

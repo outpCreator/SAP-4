@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+
 [DefaultExecutionOrder(-1000)]
 public class SceneLoader : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class SceneLoader : MonoBehaviour
     public static SceneLoader Instance { get; private set; }
 
     public UnityEvent<string> onSceneChanged = new UnityEvent<string>();
+
     private void Awake()
     {
         Instance = this;
