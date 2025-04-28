@@ -40,4 +40,10 @@ public class CursorManager : MonoBehaviour
         Cursor.visible = true;
         isCursorLocked = false;
     }
+
+    public void OnAfterSpawn(Vector3 position, Quaternion rotation)
+    {
+        transform.position = position;
+        transform.rotation = rotation;
+    }
 }

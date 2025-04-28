@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -12,17 +13,36 @@ public class PlayerManager : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    public void InitPlayer()
     {
         playerInstance = Instantiate(playerPrefab);
 
         SceneLoader.Instance.onSceneChanged.AddListener(OnSceneLoaded);
     }
 
-    private void OnSceneLoaded(string entryId)
+    public void SetSpawnPoint(Transform anchor)
+    {
+        if (anchor != null)
+        {
+            if (playerInstance != null)
+            {
+                playerInstance.GetComponent<CursorManager>().OnAfterSpawn(anchor.position, anchor.rotation);
+            }
+            else
+            {
+                Debug.LogError("Instance ist Null!");
+            }
+        }
+        else
+        {
+            Debug.LogError("Anker ist Null");
+        }
+    }
+
+    public void OnSceneLoaded(string entryId)
     {
         GameObject spawnPoint = GameObject.Find(entryId);
-        if(spawnPoint)
+        if(spawnPoint != null)
         {
             playerInstance.GetComponentInChildren<PlayerMovement>().OnAfterSpawn(spawnPoint.transform.position, spawnPoint.transform.rotation);
         } 

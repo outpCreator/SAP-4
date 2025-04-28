@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LevelSpawner : MonoBehaviour
@@ -15,44 +16,40 @@ public class LevelSpawner : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    public void InitLevel()
     {
         SpawnSpecialRooms();
     }
 
     void SpawnSpecialRooms()
     {
-        List<Vector2Int> edgePositions = LevelManager.Instance.GetEdgePositions();
-        List<Vector2Int> centerPositions = LevelManager.Instance.GetCenterPositions();
+        List<Vector2Int> usedCoords = new List<Vector2Int>();
 
-        // Start Room Instance
-        Vector2Int startCoord = edgePositions[Random.Range(0, edgePositions.Count)];
+        // Startraum
+        Vector2Int startCoord = LevelManager.Instance.GetRandomEdgePosition();
+        Debug.Log($"StartCoord chosen: {startCoord}");
         Vector3 startPos = LevelManager.Instance.GetWorldPosition(startCoord);
-
         Quaternion startRotation = LevelManager.Instance.GetRotation(startCoord);
-
         GameObject startRoom = Instantiate(startRoomPrefab, startPos, startRotation, this.transform);
-
         startRoom.name = $"Start Room ({startCoord.x}, {startCoord.y})";
         LevelManager.Instance.RegisterRoomInstance(startCoord, startRoom);
 
-        Transform roomAnchor = startRoom.transform.Find("EntryPoint");
+        Transform roomAnchor = startRoom.transform.Find("RoomAnchor");
+        if (PlayerManager.Instance != null)
+        {
+            PlayerManager.Instance.InitPlayer();
 
-        if (roomAnchor != null )
-        {
-            roomAnchor.name = "EntryPoint";
-        }
-        else
-        {
-            Debug.LogError("Start Room has no RaumAnker! Cannot set spawn point.");
+            PlayerManager.Instance.SetSpawnPoint(roomAnchor);
         }
 
-        // Boss Room Instance
-        Vector2Int bossCoord = centerPositions[Random.Range(0, centerPositions.Count)];
+        usedCoords.Add(startCoord);
+
+        // Bossraum
+        Vector2Int bossCoord = LevelManager.Instance.GetRandomCenterPositionExcluding(usedCoords);
+        Debug.Log($"BossCoord chosen: {bossCoord}");
         Vector3 bossPos = LevelManager.Instance.GetWorldPosition(bossCoord);
         GameObject bossRoom = Instantiate(bossRoomPrefab, bossPos, Quaternion.identity, this.transform);
-
-        bossRoom.name = $"Start Room ({bossCoord.x}, {bossCoord.y})";
+        bossRoom.name = $"Boss Room ({bossCoord.x}, {bossCoord.y})";
         LevelManager.Instance.RegisterRoomInstance(bossCoord, bossRoom);
 
         //SpawnNormalRooms(startCoord, bossCoord);

@@ -13,7 +13,7 @@ public class LevelManager : MonoBehaviour
     public int gridSize = 5;
     public float roomSpacing = 20f;
 
-    private Dictionary<Vector2Int, Vector3> roomPositions;
+    private Dictionary<Vector2Int, Vector3> roomPositions = new Dictionary<Vector2Int, Vector3>();
 
     private void Awake()
     {
@@ -22,14 +22,17 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
-        GenerateGrid();
         fixedRooms = Mathf.Clamp(fixedRooms, 0, 2);
     }
 
-    void GenerateGrid()
+    public void InitLevel()
     {
-        roomPositions = new Dictionary<Vector2Int, Vector3>();
+        GenerateGrid();
+        spawnedRooms.Clear();
+    }
 
+    public void GenerateGrid()
+    {
         int half = gridSize / 2;
 
         for (int x = 0 - half; x <= half; x++)
@@ -47,10 +50,12 @@ public class LevelManager : MonoBehaviour
     {
         if (roomPositions.TryGetValue(gridCoord, out Vector3 Pos))
         {
+            Debug.Log($"WorldPosition für {gridCoord}: {Pos}");
             return Pos;
         }
         else
         {
+            Debug.LogWarning($"WorldPosition für {gridCoord} NICHT gefunden!");
             return Vector3.zero;
         }
     }
@@ -60,34 +65,65 @@ public class LevelManager : MonoBehaviour
         List<Vector2Int> edgePositions = new List<Vector2Int>();
         int half = gridSize / 2;
 
-        foreach (var kvp in roomPositions)
+        for (int x = -half; x <= half; x++)
         {
-            Vector2Int coord = kvp.Key;
-            if (Mathf.Abs(coord.x) == half || Mathf.Abs(coord.y) == half)
+            for (int y = -half; y <= half; y++)
             {
-                edgePositions.Add(coord);
+                if (Mathf.Abs(x) == half || Mathf.Abs(y) == half)
+                {
+                    edgePositions.Add(new Vector2Int(x, y));
+                }
             }
         }
 
         return edgePositions;
     }
 
+    public Vector2Int GetRandomEdgePosition()
+    {
+        var edges = GetEdgePositions();
+        return edges[Random.Range(0, edges.Count)];
+    }
+
+    public Vector2Int GetRandomEdgePositionExcluding(List<Vector2Int> exclude)
+    {
+        var edges = GetEdgePositions();
+        edges.RemoveAll(pos => exclude.Contains(pos));
+        return edges[Random.Range(0, edges.Count)];
+    }
+
     public List<Vector2Int> GetCenterPositions()
     {
         List<Vector2Int> centerPositions = new List<Vector2Int>();
+        int half = gridSize / 2;
 
-        foreach (var kvp in roomPositions)
+        for (int x = -half; x <= half; x++)
         {
-            Vector2Int coord = kvp.Key;
-            if (Mathf.Abs(coord.x) <= 1 && Mathf.Abs(coord.y) <= 1)
+            for (int y = -half; y <= half; y++)
             {
-                centerPositions.Add(coord);
+                if (Mathf.Abs(x) <= 1 && Mathf.Abs(y) <= 1)
+                {
+                    centerPositions.Add(new Vector2Int(x, y));
+                }
             }
         }
 
         return centerPositions;
     }
-    
+
+    public Vector2Int GetRandomCenterPosition()
+    {
+        var centers = GetCenterPositions();
+        return centers[Random.Range(0, centers.Count)];
+    }
+
+    public Vector2Int GetRandomCenterPositionExcluding(List<Vector2Int> exclude)
+    {
+        var centers = GetCenterPositions();
+        centers.RemoveAll(pos => exclude.Contains(pos));
+        return centers[Random.Range(0, centers.Count)];
+    }
+
     public Dictionary<Vector2Int, Vector3> GetAllRoomPositions()
     {
         return roomPositions;

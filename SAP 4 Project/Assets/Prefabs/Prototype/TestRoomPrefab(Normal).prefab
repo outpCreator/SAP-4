@@ -433,7 +433,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1123742392339042484}
   m_Layer: 0
-  m_Name: RoomAnker
+  m_Name: RoomAnchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
