@@ -50,6 +50,8 @@ public class LevelSpawner : MonoBehaviour
 
         usedCoords.Add(startCoord);
 
+        LevelManager.Instance.SetStartRoomCoord(startCoord);
+
         // Bossraum
         Vector2Int bossCoord = LevelManager.Instance.GetRandomCenterPositionExcluding(usedCoords);
         Debug.Log($"BossCoord chosen: {bossCoord}");
@@ -74,7 +76,8 @@ public class LevelSpawner : MonoBehaviour
 
         if (!LevelManager.Instance.IsValidRoomCoord(newRoomCoord))
         {
-            StartCoroutine(TransitionDelay());
+            print("Raum liegt nicht auf dem Grid!");
+            StartCoroutine(LevelManager.Instance.ReturnToStartRoom());
             return;
         }
 
@@ -89,7 +92,7 @@ public class LevelSpawner : MonoBehaviour
                 if (fixedRoomInstance != null)
                 {
                     Transform NewRoomAnchor = fixedRoomInstance.transform.Find("RoomAnchor").gameObject.transform;
-                    PlayerManager.Instance.MovePlayerContainer(NewRoomAnchor, doorDirection);
+                    StartCoroutine(PlayerManager.Instance.HandleRoomTransition(NewRoomAnchor.position, NewRoomAnchor.rotation));
                 }
 
                 GameObject oldRoomInstance = LevelManager.Instance.GetRoomInstance(currentRoomCoord);
@@ -118,7 +121,7 @@ public class LevelSpawner : MonoBehaviour
 
         Transform roomAnchor = newRoom.transform.Find("RoomAnchor").gameObject.transform;
 
-        PlayerManager.Instance.MovePlayerContainer(roomAnchor, doorDirection);
+        StartCoroutine(PlayerManager.Instance.HandleRoomTransition(roomAnchor.position, roomAnchor.rotation));
 
         LevelManager.Instance.RegisterRoomInstance(newRoomCoord, newRoom);
 

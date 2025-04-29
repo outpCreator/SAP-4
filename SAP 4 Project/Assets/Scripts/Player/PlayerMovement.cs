@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -84,20 +85,33 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void FreezeMovement(bool freeze)
+    public void FreezeMovement(bool freeze, Vector3 position, Quaternion rotation)
     {
         isFrozen = freeze;
         if (freeze && charController != null)
         {
-            charController.velocity.Set(0, 0, 0);
+            charController.enabled = false;
+            transform.position = position;
+            transform.rotation = rotation;
+            charController.enabled = true;
         }
     }
 
-    public void AlignMoveDirection(Quaternion containerRotation)
+    public IEnumerator SmoothStep(float duration = 0.2f)
     {
-        moveDirection = containerRotation * Vector3.forward;
-        moveDirection.y = 0f;
-        moveDirection.Normalize();
+        Vector3 initialDirection = moveDirection;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = 1f -(elapsed / duration);
+            moveDirection = initialDirection * t;
+
+            yield return null;
+        }
+
+        moveDirection = Vector3.zero;
     }
 
     void Potion()

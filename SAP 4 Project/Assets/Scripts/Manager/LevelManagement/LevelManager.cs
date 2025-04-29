@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,9 @@ public class LevelManager : MonoBehaviour
 
     Vector2Int currentRoomCoord;
     public Vector2Int CurrentRoomCoord => currentRoomCoord;
+
+    Vector2Int startRoomCoord;
+    public Vector2Int StartRoomCoord => startRoomCoord;
 
     [Header("Grid")]
     public int gridSize = 5;
@@ -67,6 +71,11 @@ public class LevelManager : MonoBehaviour
     public Dictionary<Vector2Int, Vector3> GetAllRoomPositions()
     {
         return roomPositions;
+    }
+
+    public void SetStartRoomCoord(Vector2Int startCoord)
+    {
+        startRoomCoord = startCoord;
     }
 
     public void SetCurrentRoomCoord(Vector2Int newCoord)
@@ -178,6 +187,16 @@ public class LevelManager : MonoBehaviour
         return currentCoord + offset;
     }
 
+    public GameObject GetRoomInstance(Vector2Int coord)
+    {
+        if (spawnedRooms.TryGetValue(coord, out GameObject roomInstance))
+        {
+            return roomInstance;
+        }
+
+        return null;
+    }
+
     public void RegisterRoomInstance(Vector2Int gridCoord, GameObject roomInstance)
     {
         if (!spawnedRooms.ContainsKey(gridCoord))
@@ -192,16 +211,6 @@ public class LevelManager : MonoBehaviour
         {
             spawnedRooms.Remove(gridCoord);
         }
-    }
-
-    public GameObject GetRoomInstance(Vector2Int coord)
-    {
-        if (spawnedRooms.TryGetValue(coord, out GameObject roomInstance))
-        {
-            return roomInstance;
-        }
-
-        return null;
     }
 
     public Quaternion GetRotation(Vector2Int coord)
@@ -232,5 +241,32 @@ public class LevelManager : MonoBehaviour
         {
             fixedRooms.Add(coord);
         }
+    }
+
+    public IEnumerator ReturnToStartRoom()
+    {
+        Vector2Int startCoord = startRoomCoord;
+        GameObject startRoom = GetRoomInstance(startCoord);
+        if (startRoom == null)
+        {
+            yield break;
+        }
+
+        Transform anchor = startRoom.transform.Find("RoomAnchor");
+        Vector3 anchorPos = anchor.position;
+        Quaternion anchorRot = anchor.rotation;
+
+        PlayerMovement playerMovement = PlayerManager.Instance.playerMovementScript;
+        playerMovement.FreezeMovement(true, anchorPos, anchorRot);
+
+        Transform container = PlayerManager.Instance.playerContainer;
+        container.position = anchorPos;
+        container.rotation = anchorRot;
+
+        SetCurrentRoomCoord(startCoord);
+
+        yield return new WaitForSeconds(0.25f);
+
+        playerMovement.FreezeMovement(false, anchorPos, anchorRot);
     }
 }

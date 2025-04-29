@@ -10,9 +10,14 @@ public class PlayerManager : MonoBehaviour
     public GameObject playerPrefab;
     GameObject playerInstance;
 
+    public PlayerMovement playerMovementScript;
+    public Transform playerContainer;
+
     private void Awake()
     {
         Instance = this;
+        playerMovementScript = playerInstance.GetComponentInChildren<PlayerMovement>();
+        playerContainer = playerInstance.transform;
     }
 
     public void InitPlayer()
@@ -41,66 +46,36 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void MovePlayerContainer(Transform anchor, DoorTrigger.Direction direction)
+    public IEnumerator HandleRoomTransition(Vector3 targetPosition, Quaternion targetRotation)
     {
-        StartCoroutine(MovePlayer(anchor, direction));
-    }
-
-    IEnumerator MovePlayer(Transform anchor, DoorTrigger.Direction direction)
-    {
-        float time = 0f;
-        float duration = 1f;
-
-        Vector3 startPos = playerInstance.transform.position;
-        Vector3 targetPos = anchor.position;
-
-        Quaternion startRot = playerInstance.transform.rotation;
-        Quaternion targetRot = GetPlayerRotation(direction);
-
         PlayerMovement playerMovement = playerInstance.GetComponentInChildren<PlayerMovement>();
-        if (playerMovement != null )
+        Transform playerContainer = playerInstance.transform;
+
+        Transform playerTransform = playerMovement.transform;
+        Transform originalParent = playerTransform.parent;
+        playerTransform.parent = null;
+
+        float duration = 0.4f;
+        float elapsed = 0f;
+        Vector3 startPos = playerContainer.position;
+        Quaternion startRot = playerContainer.rotation;
+
+        while (elapsed < duration)
         {
-            playerMovement.FreezeMovement(true);
-        }
-
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            float t = time / duration;
-
-            t = Mathf.Sin(t * Mathf.PI * 0.5f);
-
-            playerInstance.transform.position = Vector3.Lerp(startPos, targetPos, t);
-            playerInstance.transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
-
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            t = Mathf.SmoothStep(0f, 1f, t);
+            playerContainer.position = Vector3.Lerp(startPos, targetPosition, t);
+            playerContainer.rotation = startRot;
             yield return null;
         }
 
-        playerInstance.transform.position = targetPos;
-        playerInstance.transform.rotation = targetRot;
+        playerContainer.position = targetPosition;
 
-        if (playerMovement != null )
-        {
-            playerMovement.FreezeMovement(false);
-            playerMovement.AlignMoveDirection(targetRot);
-        }
-    }
+        playerTransform.parent = originalParent;
 
-    Quaternion GetPlayerRotation(DoorTrigger.Direction direction)
-    {
-        switch (direction)
-        {
-            case DoorTrigger.Direction.North:
-                return Quaternion.Euler(0, 0, 0);
-            case DoorTrigger.Direction.East:
-                return Quaternion.Euler(0, 90, 0);
-            case DoorTrigger.Direction.South:
-                return Quaternion.Euler(0, 180, 0);
-            case DoorTrigger.Direction.West:
-                return Quaternion.Euler(0, 270, 0);
-            default:
-                return Quaternion.identity;
-        }
+        yield return new WaitForSeconds(0.1f);
+        playerMovement.FreezeMovement(false, targetPosition, targetRotation);
     }
 
     public void OnSceneLoaded(string entryId)
