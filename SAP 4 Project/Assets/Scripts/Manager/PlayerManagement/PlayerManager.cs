@@ -16,13 +16,14 @@ public class PlayerManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        playerMovementScript = playerInstance.GetComponentInChildren<PlayerMovement>();
-        playerContainer = playerInstance.transform;
     }
 
     public void InitPlayer()
     {
         playerInstance = Instantiate(playerPrefab);
+
+        playerMovementScript = playerInstance.GetComponentInChildren<PlayerMovement>();
+        playerContainer = playerInstance.transform;
 
         SceneLoader.Instance.onSceneChanged.AddListener(OnSceneLoaded);
     }
@@ -81,6 +82,12 @@ public class PlayerManager : MonoBehaviour
     public void OnSceneLoaded(string entryId)
     {
         GameObject spawnPoint = GameObject.Find(entryId);
+
+        if (spawnPoint == null)
+        {
+            spawnPoint = GameObject.Find("SpawnPoint");
+        }
+
         if(spawnPoint != null)
         {
             playerInstance.GetComponentInChildren<PlayerMovement>().OnAfterSpawn(spawnPoint.transform.position, spawnPoint.transform.rotation);

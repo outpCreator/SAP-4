@@ -6,6 +6,11 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Stats")]
     public float health = 100;
+    [SerializeField] float baseDamage = 5f;
+    [SerializeField] float attackRange = 0f;
+    [SerializeField] float attackSpeed = 0f;
+
+    float damageMultiplier = 0f;
 
     [Header("Movement")]
     [SerializeField] float moveSpeed;
@@ -18,12 +23,10 @@ public class PlayerMovement : MonoBehaviour
     // Components
     CharacterController charController;
    
-
     [Header("Potion")]
-    [SerializeField] float baseDamage;
 
     [Header("Brewing")]
-    public 
+    
 
     // Inpus
     Vector2 moveInput = Vector2.zero;
@@ -59,9 +62,9 @@ public class PlayerMovement : MonoBehaviour
 
         Move();
 
-        if (potionInput) Potion();
+        Potion();
 
-        if (brewingInput) Brewing();
+        Brewing();
     }
 
     void Move()
@@ -116,12 +119,37 @@ public class PlayerMovement : MonoBehaviour
 
     void Potion()
     {
+        EnemyStats targetEnemyStats = FindAnyObjectByType<EnemyStats>();
 
+        float actualDamage = baseDamage + damageMultiplier;
+        bool canAttack = true;
+
+        if (potionInput)
+        {
+            if (canAttack && targetEnemyStats != null)
+            {
+                print("ATTACK!");
+                canAttack = false;
+
+                targetEnemyStats.health -= actualDamage;
+
+                float duration = 0f;
+
+                duration += Time.deltaTime;
+
+                if (duration >= attackSpeed)
+                {
+                    canAttack = true;
+
+                    print($"Attack done! Enemyhealth at {targetEnemyStats.health}, having dealed {actualDamage} damage!");
+                }
+            }
+        }
     }
 
     void Brewing()
     {
-
+        
     }
 
     public void OnAfterSpawn(Vector3 position, Quaternion rotation)

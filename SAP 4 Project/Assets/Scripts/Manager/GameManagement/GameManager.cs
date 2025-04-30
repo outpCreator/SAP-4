@@ -21,9 +21,9 @@ public class GameManager : MonoBehaviour
             LevelSpawner.Instance.InitLevel();
         }
 
-        //if(PlayerManager.Instance != null)
-        //{
-        //    PlayerManager.Instance.InitPlayer();
-        //}
+        if (LevelManager.Instance == null || LevelSpawner.Instance == null)
+        {
+            PlayerManager.Instance.InitPlayer();
+        }
     }
 }

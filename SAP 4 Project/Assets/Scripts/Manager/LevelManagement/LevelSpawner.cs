@@ -8,6 +8,7 @@ public class LevelSpawner : MonoBehaviour
     public static LevelSpawner Instance;
 
     [Header("Rooms")]
+    public List<RoomDef> rooms = new List<RoomDef>();
     public GameObject[] roomPrefabs;
     public GameObject startRoomPrefab;
     public GameObject bossRoomPrefab;
