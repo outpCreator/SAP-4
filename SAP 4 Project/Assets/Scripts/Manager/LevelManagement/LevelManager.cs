@@ -10,15 +10,15 @@ public class LevelManager : MonoBehaviour
     public int completedRooms = 0;
     public int FixedRooms = 0;
 
+    [Header("Grid")]
+    public int gridSize = 5;
+    public float roomSpacing = 20f;
+
     Vector2Int currentRoomCoord;
     public Vector2Int CurrentRoomCoord => currentRoomCoord;
 
     Vector2Int startRoomCoord;
     public Vector2Int StartRoomCoord => startRoomCoord;
-
-    [Header("Grid")]
-    public int gridSize = 5;
-    public float roomSpacing = 20f;
 
     Dictionary<Vector2Int, Vector3> roomPositions = new Dictionary<Vector2Int, Vector3>();
     Dictionary<Vector2Int, GameObject> spawnedRooms = new Dictionary<Vector2Int, GameObject>();
@@ -245,25 +245,46 @@ public class LevelManager : MonoBehaviour
 
     public IEnumerator ReturnToStartRoom()
     {
+        print("Routine started");
         Vector2Int startCoord = startRoomCoord;
         GameObject startRoom = GetRoomInstance(startCoord);
         if (startRoom == null)
         {
+            Debug.LogError($"StartRoom {startCoord} is null!");
             yield break;
         }
 
         Transform anchor = startRoom.transform.Find("RoomAnchor");
         Vector3 anchorPos = anchor.position;
-        Quaternion anchorRot = anchor.rotation;
+        Quaternion anchorRot = startRoom.transform.rotation;
 
         PlayerMovement playerMovement = PlayerManager.Instance.playerMovementScript;
+        Transform container = PlayerManager.Instance.playerContainer;
+        Transform camTransform = PlayerManager.Instance.camTransform;
         playerMovement.FreezeMovement(true, anchorPos, anchorRot);
 
-        Transform container = PlayerManager.Instance.playerContainer;
         container.position = anchorPos;
         container.rotation = anchorRot;
 
-        SetCurrentRoomCoord(startCoord);
+        playerMovement.gameObject.transform.localPosition = new Vector3(0, 0, -5);
+        playerMovement.gameObject.transform.localRotation = Quaternion.identity;
+
+        camTransform.localPosition = PlayerManager.Instance.initialCameraPosition;
+        camTransform.localRotation = PlayerManager.Instance.initialCameraRotation;
+
+        Vector2Int previousCoord = currentRoomCoord;
+        GameObject roomToDelete = GetRoomInstance(previousCoord);
+
+        if (roomToDelete != null && !IsRoomFixed(previousCoord))
+        {
+            Destroy(roomToDelete);
+            RemoveRoomInstance(previousCoord, roomToDelete);
+        }
+
+        Debug.Log($"Setting currentRoomCoord to start room: {startCoord}");
+        currentRoomCoord = startCoord;
+
+        print($"Current Room {currentRoomCoord}");
 
         yield return new WaitForSeconds(0.25f);
 

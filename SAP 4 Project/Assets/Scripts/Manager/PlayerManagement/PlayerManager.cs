@@ -13,6 +13,11 @@ public class PlayerManager : MonoBehaviour
     public PlayerMovement playerMovementScript;
     public Transform playerContainer;
 
+    // Camera Position & Rotation
+    public Transform camTransform;
+    public Vector3 initialCameraPosition {  get; private set; }
+    public Quaternion initialCameraRotation { get; private set; }
+
     private void Awake()
     {
         Instance = this;
@@ -24,6 +29,10 @@ public class PlayerManager : MonoBehaviour
 
         playerMovementScript = playerInstance.GetComponentInChildren<PlayerMovement>();
         playerContainer = playerInstance.transform;
+
+        camTransform = playerContainer.GetComponentInChildren<CameraMovement>().transform;
+        initialCameraPosition = camTransform.localPosition;
+        initialCameraRotation = camTransform.localRotation;
 
         SceneLoader.Instance.onSceneChanged.AddListener(OnSceneLoaded);
     }

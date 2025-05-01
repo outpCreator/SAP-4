@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform cameraTransform;
 
     bool isFrozen = false;
+    bool canMove = true;
     Vector3 moveDirection = Vector3.zero;
 
     // Components
@@ -58,13 +59,12 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (isFrozen) return;
-
-        Move();
-
-        Potion();
-
-        Brewing();
+        if (!isFrozen || canMove)
+        {
+            Move();
+            Potion();
+            Brewing();
+        }
     }
 
     void Move()
@@ -93,6 +93,8 @@ public class PlayerMovement : MonoBehaviour
         isFrozen = freeze;
         if (freeze && charController != null)
         {
+            canMove = false;
+            charController.velocity.Set(0, 0, 0);
             charController.enabled = false;
             transform.position = position;
             transform.rotation = rotation;

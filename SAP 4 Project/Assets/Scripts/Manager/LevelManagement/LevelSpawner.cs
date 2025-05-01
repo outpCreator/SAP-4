@@ -79,6 +79,7 @@ public class LevelSpawner : MonoBehaviour
         {
             print("Raum liegt nicht auf dem Grid!");
             StartCoroutine(LevelManager.Instance.ReturnToStartRoom());
+            StartCoroutine(TransitionDelay());
             return;
         }
 
