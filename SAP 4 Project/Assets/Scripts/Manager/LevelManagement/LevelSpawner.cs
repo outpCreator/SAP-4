@@ -32,16 +32,22 @@ public class LevelSpawner : MonoBehaviour
         // Startraum
         Vector2Int startCoord = LevelManager.Instance.GetRandomEdgePosition();
         Debug.Log($"StartCoord chosen: {startCoord}");
+
         Vector3 startPos = LevelManager.Instance.GetWorldPosition(startCoord);
         Quaternion startRotation = LevelManager.Instance.GetRotation(startCoord);
+
         GameObject startRoom = Instantiate(startRoomPrefab, startPos, startRotation, this.transform);
         startRoom.name = $"Start Room ({startCoord.x}, {startCoord.y})";
-        LevelManager.Instance.RegisterRoomInstance(startCoord, startRoom);
 
         LevelManager.Instance.SetCurrentRoomCoord(startCoord);
         LevelManager.Instance.AddFixedRoom(startCoord);
+        LevelManager.Instance.RegisterRoomInstance(startCoord, startRoom);
 
+        LevelManager.Instance.SetStartRoomCoord(startCoord);
+
+        usedCoords.Add(startCoord);
         Transform roomAnchor = startRoom.transform.Find("RoomAnchor");
+
         if (PlayerManager.Instance != null)
         {
             PlayerManager.Instance.InitPlayer();
@@ -49,19 +55,19 @@ public class LevelSpawner : MonoBehaviour
             PlayerManager.Instance.SetSpawnPoint(roomAnchor);
         }
 
-        usedCoords.Add(startCoord);
-
-        LevelManager.Instance.SetStartRoomCoord(startCoord);
-
         // Bossraum
         Vector2Int bossCoord = LevelManager.Instance.GetRandomCenterPositionExcluding(usedCoords);
         Debug.Log($"BossCoord chosen: {bossCoord}");
+
         Vector3 bossPos = LevelManager.Instance.GetWorldPosition(bossCoord);
+
         GameObject bossRoom = Instantiate(bossRoomPrefab, bossPos, Quaternion.identity, this.transform);
         bossRoom.name = $"Boss Room ({bossCoord.x}, {bossCoord.y})";
-        LevelManager.Instance.RegisterRoomInstance(bossCoord, bossRoom);
 
         LevelManager.Instance.AddFixedRoom(bossCoord);
+        LevelManager.Instance.RegisterRoomInstance(bossCoord, bossRoom);
+
+        bossRoom.SetActive(false);
     }
 
     public void SpawnNextRoom(DoorTrigger.Direction doorDirection)
@@ -75,14 +81,22 @@ public class LevelSpawner : MonoBehaviour
         Vector2Int newRoomCoord = LevelManager.Instance.GetNewRoomPosition(currentRoomCoord, doorDirection);
         Debug.Log($"[LevelSpawner] Moving from {currentRoomCoord} to {newRoomCoord} through {doorDirection} door.");
 
+        GameObject previouseRoomInstance = LevelManager.Instance.GetRoomInstance(currentRoomCoord);
+
+        // Check for valid room
         if (!LevelManager.Instance.IsValidRoomCoord(newRoomCoord))
         {
             print("Raum liegt nicht auf dem Grid!");
+
+            GameObject startRoom = LevelManager.Instance.GetRoomInstance(LevelManager.Instance.StartRoomCoord);
+            startRoom.SetActive(true);
+
             StartCoroutine(LevelManager.Instance.ReturnToStartRoom());
             StartCoroutine(TransitionDelay());
             return;
         }
 
+        // Check for existing or fixed room
         if (LevelManager.Instance.HasRoomAt(newRoomCoord))
         {
             bool isFixedRoom = LevelManager.Instance.IsRoomFixed(newRoomCoord);
@@ -94,14 +108,20 @@ public class LevelSpawner : MonoBehaviour
                 if (fixedRoomInstance != null)
                 {
                     Transform NewRoomAnchor = fixedRoomInstance.transform.Find("RoomAnchor").gameObject.transform;
-                    StartCoroutine(PlayerManager.Instance.HandleRoomTransition(NewRoomAnchor.position, NewRoomAnchor.rotation));
+
+                    fixedRoomInstance.SetActive(true);
+
+                    StartCoroutine(LevelManager.Instance.HandleRoomTransition(NewRoomAnchor.position, NewRoomAnchor.rotation));
                 }
 
-                GameObject oldRoomInstance = LevelManager.Instance.GetRoomInstance(currentRoomCoord);
-                if (oldRoomInstance != null && !LevelManager.Instance.IsRoomFixed(currentRoomCoord))
+                if (previouseRoomInstance != null && !LevelManager.Instance.IsRoomFixed(currentRoomCoord))
                 {
-                    Destroy(oldRoomInstance);
-                    LevelManager.Instance.RemoveRoomInstance(currentRoomCoord, oldRoomInstance);
+                    Destroy(previouseRoomInstance);
+                    LevelManager.Instance.RemoveRoomInstance(currentRoomCoord, previouseRoomInstance);
+                }
+                else if (LevelManager.Instance.IsRoomFixed(currentRoomCoord))
+                {
+                    previouseRoomInstance.SetActive(false);
                 }
 
                 StartCoroutine(TransitionDelay());
@@ -113,6 +133,7 @@ public class LevelSpawner : MonoBehaviour
             }
         }
         
+        // New room spawning
         Vector3 roomPos = LevelManager.Instance.GetWorldPosition(newRoomCoord);
         Quaternion roomRot = LevelManager.Instance.GetRotation(newRoomCoord);
 
@@ -123,18 +144,23 @@ public class LevelSpawner : MonoBehaviour
 
         Transform roomAnchor = newRoom.transform.Find("RoomAnchor").gameObject.transform;
 
-        StartCoroutine(PlayerManager.Instance.HandleRoomTransition(roomAnchor.position, roomAnchor.rotation));
+        StartCoroutine(LevelManager.Instance.HandleRoomTransition(roomAnchor.position, roomAnchor.rotation));
 
         LevelManager.Instance.RegisterRoomInstance(newRoomCoord, newRoom);
 
-        GameObject roomToDelete = LevelManager.Instance.GetRoomInstance(currentRoomCoord);
-        if (roomToDelete != null && !LevelManager.Instance.IsRoomFixed(currentRoomCoord))
+        if (previouseRoomInstance != null && !LevelManager.Instance.IsRoomFixed(currentRoomCoord))
         {
-            Destroy(roomToDelete);
-            LevelManager.Instance.RemoveRoomInstance(currentRoomCoord, roomToDelete);
+            Destroy(previouseRoomInstance);
+            LevelManager.Instance.RemoveRoomInstance(currentRoomCoord, previouseRoomInstance);
+        }
+        else if (LevelManager.Instance.IsRoomFixed(currentRoomCoord))
+        {
+            previouseRoomInstance.SetActive(false);
         }
 
         LevelManager.Instance.SetCurrentRoomCoord(newRoomCoord);
+
+        FightManager.Instance.GetEnemies();
 
         StartCoroutine(TransitionDelay());
     }

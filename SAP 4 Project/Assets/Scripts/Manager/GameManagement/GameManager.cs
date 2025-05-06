@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,9 +22,17 @@ public class GameManager : MonoBehaviour
             LevelSpawner.Instance.InitLevel();
         }
 
-        if (LevelManager.Instance == null || LevelSpawner.Instance == null)
+        if (LevelManager.Instance == null || LevelSpawner.Instance == null && PlayerManager.Instance != null)
         {
+            Debug.Log("Not in a Level! Initialized from Game Manger");
             PlayerManager.Instance.InitPlayer();
+        }
+
+        if (FightManager.Instance != null)
+        {
+            Debug.Log("Fight Manager is not null!");
+            FightManager.Instance.InitFightManager();
+            FightManager.Instance.GetEnemies();
         }
     }
 }

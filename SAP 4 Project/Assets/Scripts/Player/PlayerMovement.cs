@@ -10,8 +10,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float attackRange = 0f;
     [SerializeField] float attackSpeed = 0f;
 
-    float damageMultiplier = 0f;
-
     [Header("Movement")]
     [SerializeField] float moveSpeed;
     [SerializeField] float rotationSpeed;
@@ -23,7 +21,11 @@ public class PlayerMovement : MonoBehaviour
 
     // Components
     CharacterController charController;
-   
+
+    [Header("Fighting")]
+    public float baseCooldown = 5f;
+    public float minCooldown = 3f;
+
     [Header("Potion")]
 
     [Header("Brewing")]
@@ -33,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
     Vector2 moveInput = Vector2.zero;
     bool potionInput = false;
     bool brewingInput = false;
+    bool fixateRoomInput = false;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -47,14 +50,14 @@ public class PlayerMovement : MonoBehaviour
         brewingInput = context.action.triggered;
     }
 
-    private void Awake()
+    public void OnFixateRoom(InputAction.CallbackContext context)
     {
-        charController = GetComponent<CharacterController>();
+        fixateRoomInput = context.action.triggered;
     }
 
-    void Start()
+    private void Start()
     {
-
+        charController = GetComponent<CharacterController>();
     }
 
     void Update()
@@ -62,8 +65,7 @@ public class PlayerMovement : MonoBehaviour
         if (!isFrozen || canMove)
         {
             Move();
-            Potion();
-            Brewing();
+            FixateRoom();
         }
     }
 
@@ -102,56 +104,15 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public IEnumerator SmoothStep(float duration = 0.2f)
-    {
-        Vector3 initialDirection = moveDirection;
-        float elapsed = 0f;
 
-        while (elapsed < duration)
+
+    void FixateRoom()
+    {
+        if (fixateRoomInput)
         {
-            elapsed += Time.deltaTime;
-            float t = 1f -(elapsed / duration);
-            moveDirection = initialDirection * t;
-
-            yield return null;
+            int amount = 1;
+            PlayerUIManager.Instance.SetFixedRoomCount(amount);
         }
-
-        moveDirection = Vector3.zero;
-    }
-
-    void Potion()
-    {
-        EnemyStats targetEnemyStats = FindAnyObjectByType<EnemyStats>();
-
-        float actualDamage = baseDamage + damageMultiplier;
-        bool canAttack = true;
-
-        if (potionInput)
-        {
-            if (canAttack && targetEnemyStats != null)
-            {
-                print("ATTACK!");
-                canAttack = false;
-
-                targetEnemyStats.health -= actualDamage;
-
-                float duration = 0f;
-
-                duration += Time.deltaTime;
-
-                if (duration >= attackSpeed)
-                {
-                    canAttack = true;
-
-                    print($"Attack done! Enemyhealth at {targetEnemyStats.health}, having dealed {actualDamage} damage!");
-                }
-            }
-        }
-    }
-
-    void Brewing()
-    {
-        
     }
 
     public void OnAfterSpawn(Vector3 position, Quaternion rotation)

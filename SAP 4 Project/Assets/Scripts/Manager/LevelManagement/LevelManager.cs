@@ -243,6 +243,38 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    public IEnumerator HandleRoomTransition(Vector3 targetPosition, Quaternion targetRotation)
+    {
+        PlayerMovement playerMovement = PlayerManager.Instance.playerMovementScript;
+        Transform playerContainer = PlayerManager.Instance.playerContainer;
+
+        Transform playerTransform = playerMovement.transform;
+        Transform originalParent = playerTransform.parent;
+        playerTransform.parent = null;
+
+        float duration = 0.4f;
+        float elapsed = 0f;
+        Vector3 startPos = playerContainer.position;
+        Quaternion startRot = playerContainer.rotation;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            t = Mathf.SmoothStep(0f, 1f, t);
+            playerContainer.position = Vector3.Lerp(startPos, targetPosition, t);
+            playerContainer.rotation = startRot;
+            yield return null;
+        }
+
+        playerContainer.position = targetPosition;
+
+        playerTransform.parent = originalParent;
+
+        yield return new WaitForSeconds(0.1f);
+        playerMovement.FreezeMovement(false, targetPosition, targetRotation);
+    }
+
     public IEnumerator ReturnToStartRoom()
     {
         print("Routine started");
@@ -273,12 +305,16 @@ public class LevelManager : MonoBehaviour
         camTransform.localRotation = PlayerManager.Instance.initialCameraRotation;
 
         Vector2Int previousCoord = currentRoomCoord;
-        GameObject roomToDelete = GetRoomInstance(previousCoord);
+        GameObject previouseRoomInstance = GetRoomInstance(previousCoord);
 
-        if (roomToDelete != null && !IsRoomFixed(previousCoord))
+        if (previouseRoomInstance != null && !IsRoomFixed(previousCoord))
         {
-            Destroy(roomToDelete);
-            RemoveRoomInstance(previousCoord, roomToDelete);
+            Destroy(previouseRoomInstance);
+            RemoveRoomInstance(previousCoord, previouseRoomInstance);
+        }
+        else if (IsRoomFixed(previousCoord))
+        {
+            previouseRoomInstance.SetActive(false);
         }
 
         Debug.Log($"Setting currentRoomCoord to start room: {startCoord}");
@@ -289,5 +325,17 @@ public class LevelManager : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
 
         playerMovement.FreezeMovement(false, anchorPos, anchorRot);
+    }
+
+    public void FixateRoom()
+    {
+        AddFixedRoom(currentRoomCoord);
+
+        GameObject fixedRoomInstance = GetRoomInstance(currentRoomCoord);
+        MeshRenderer fixedRoomRenderer = fixedRoomInstance.GetComponent<MeshRenderer>();
+
+        fixedRoomRenderer.material.color = Color.magenta;
+
+        Debug.Log($"Added fixed room {currentRoomCoord}");
     }
 }
