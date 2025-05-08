@@ -68,13 +68,11 @@ public class FightManager : MonoBehaviour
             case FightStates.NoActiveFight:
 
                 cameraMovement.SwitchCameraMode(false);
-                print(FightStates.NoActiveFight);
 
                 break;
             case FightStates.InAFight:
 
                 cameraMovement.SwitchCameraMode(true);
-                print(FightStates.InAFight);
 
                 break;
         }

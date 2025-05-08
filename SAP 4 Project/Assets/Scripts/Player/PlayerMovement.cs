@@ -25,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Fighting")]
     public float baseCooldown = 5f;
     public float minCooldown = 3f;
+    bool canAttack = true;
 
     [Header("Potion")]
 
@@ -66,7 +67,10 @@ public class PlayerMovement : MonoBehaviour
         {
             Move();
             FixateRoom();
+            Attack();
         }
+
+        FightCooldown();
     }
 
     void Move()
@@ -104,7 +108,38 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void Attack()
+    {
+        if(canAttack)
+        {
+            float attackDamage = baseDamage;
 
+            if (potionInput)
+            {
+                EnemyCombat enemy = FindFirstObjectByType<EnemyCombat>();
+                enemy.health -= attackDamage;
+
+                canAttack = false;
+
+                print($"Enemy {enemy} took {attackDamage} and is now at {enemy.health} health!");
+            }
+        }
+    }
+
+    void FightCooldown()
+    {
+        if (!canAttack)
+        {
+            float time = 0f;
+
+            time += Time.deltaTime;
+
+            if (time >= baseCooldown)
+            {
+                canAttack = true;
+            }
+        }
+    }
 
     void FixateRoom()
     {

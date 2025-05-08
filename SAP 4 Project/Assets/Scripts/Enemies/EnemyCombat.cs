@@ -28,7 +28,7 @@ public class EnemyCombat : MonoBehaviour
 
     bool isAttacking = false;
 
-    float health = 0;
+    public float health = 0;
 
     public enum EnemyState
     {
