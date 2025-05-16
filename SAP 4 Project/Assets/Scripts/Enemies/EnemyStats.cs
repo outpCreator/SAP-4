@@ -1,0 +1,14 @@
+using UnityEngine;
+
+public class EnemyStats : MonoBehaviour
+{
+    [Header("Stats")]
+    public float moveSpeed = 0;
+    public float idleMoveRange = 0;
+
+    public float health = 0;
+
+    public float attackDamage = 0;
+    public float attackSpeed = 0;
+    public float attackRange = 0;
+}

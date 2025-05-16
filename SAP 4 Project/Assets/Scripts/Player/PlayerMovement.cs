@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,26 +6,37 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Stats")]
     public float health = 100;
+    [SerializeField] float baseDamage = 5f;
+    [SerializeField] float attackRange = 0f;
+    [SerializeField] float attackSpeed = 0f;
 
     [Header("Movement")]
     [SerializeField] float moveSpeed;
     [SerializeField] float rotationSpeed;
     public Transform cameraTransform;
 
+    bool isFrozen = false;
+    bool canMove = true;
+    Vector3 moveDirection = Vector3.zero;
+
     // Components
     CharacterController charController;
-   
+
+    [Header("Fighting")]
+    public float baseCooldown = 5f;
+    public float minCooldown = 3f;
+    bool canAttack = true;
 
     [Header("Potion")]
-    [SerializeField] float baseDamage;
 
     [Header("Brewing")]
-    public 
+    
 
     // Inpus
     Vector2 moveInput = Vector2.zero;
     bool potionInput = false;
     bool brewingInput = false;
+    bool fixateRoomInput = false;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -39,23 +51,26 @@ public class PlayerMovement : MonoBehaviour
         brewingInput = context.action.triggered;
     }
 
-    private void Awake()
+    public void OnFixateRoom(InputAction.CallbackContext context)
+    {
+        fixateRoomInput = context.action.triggered;
+    }
+
+    private void Start()
     {
         charController = GetComponent<CharacterController>();
     }
 
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
-        Move();
+        if (!isFrozen || canMove)
+        {
+            Move();
+            FixateRoom();
+            Attack();
+        }
 
-        if (potionInput) Potion();
-
-        if (brewingInput) Brewing();
+        FightCooldown();
     }
 
     void Move()
@@ -68,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
         camForward.Normalize();
         camRight.Normalize();
 
-        Vector3 moveDirection = camForward * moveInput.y + camRight * moveInput.x;
+        moveDirection = camForward * moveInput.y + camRight * moveInput.x;
 
         charController.SimpleMove(moveDirection * moveSpeed);
 
@@ -79,13 +94,67 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void Potion()
+    public void FreezeMovement(bool freeze, Vector3 position, Quaternion rotation)
     {
-
+        isFrozen = freeze;
+        if (freeze && charController != null)
+        {
+            canMove = false;
+            charController.velocity.Set(0, 0, 0);
+            charController.enabled = false;
+            transform.position = position;
+            transform.rotation = rotation;
+            charController.enabled = true;
+        }
     }
 
-    void Brewing()
+    public void Attack()
     {
+        if(canAttack)
+        {
+            float attackDamage = baseDamage;
 
+            if (potionInput)
+            {
+                EnemyCombat enemy = FindFirstObjectByType<EnemyCombat>();
+                enemy.health -= attackDamage;
+
+                canAttack = false;
+
+                print($"Enemy {enemy} took {attackDamage} and is now at {enemy.health} health!");
+            }
+        }
+    }
+
+    void FightCooldown()
+    {
+        if (!canAttack)
+        {
+            float time = 0f;
+
+            time += Time.deltaTime;
+
+            if (time >= baseCooldown)
+            {
+                canAttack = true;
+            }
+        }
+    }
+
+    void FixateRoom()
+    {
+        if (fixateRoomInput)
+        {
+            int amount = 1;
+            PlayerUIManager.Instance.SetFixedRoomCount(amount);
+        }
+    }
+
+    public void OnAfterSpawn(Vector3 position, Quaternion rotation)
+    {
+        charController.enabled = false;
+        transform.position = position;
+        transform.rotation = rotation;
+        charController.enabled = true;
     }
 }
