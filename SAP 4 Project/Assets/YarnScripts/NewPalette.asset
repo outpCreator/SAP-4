@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 992e2b513670a4d089c2e58d4c48e8c8, type: 3}
   m_Name: NewPalette
   m_EditorClassIdentifier: 
-  ColourMarkers: []
+  ColourMarkers:
+  - Marker: 
+    Color: {r: 0.27044016, g: 0.05187684, b: 0.05187684, a: 0}
