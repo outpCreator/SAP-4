@@ -263,10 +263,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalCamSpeed: 80
   combatCamSpeed: 50
-  transitionSpeed: 3
+  transitionSpeed: 4
   smoothTime: 0.4
+  pivotSmoothTime: 0.4
   defaultOffset: {x: 0, y: 0, z: 0}
-  combatOffset: {x: 0, y: 6, z: -6}
+  combatOffset: {x: 0, y: 8, z: -7}
   playerContainer: {fileID: 8848156643980238128}
   cam: {fileID: 6118752575673387928}
 --- !u!114 &7872680430459947924

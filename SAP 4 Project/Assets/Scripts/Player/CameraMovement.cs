@@ -8,10 +8,11 @@ public class CameraMovement : MonoBehaviour
     public float combatCamSpeed;
     public float transitionSpeed;
     public float smoothTime = 0.6f;
+    public float pivotSmoothTime = 0.2f;
 
     [Header("Offsets")]
     public Vector3 defaultOffset = Vector3.zero;
-    public Vector3 combatOffset = new Vector3(0, 6, -6);
+    public Vector3 combatOffset = new Vector3(0, 8, -7);
 
     Vector3 smoothPivotPosition;
     Vector3 pivotVelocity = Vector3.zero;
@@ -67,9 +68,14 @@ public class CameraMovement : MonoBehaviour
         }
         else if (transitioningBack)
         {
-            smoothPivotPosition = Vector3.SmoothDamp(smoothPivotPosition, playerContainer.position, ref pivotVelocity, smoothTime);
+            if (smoothPivotPosition == Vector3.zero)
+            {
+                smoothPivotPosition = transform.position;
+            }
 
-            if (Vector3.Distance(smoothPivotPosition, playerContainer.position) < 0.05f)
+            smoothPivotPosition = Vector3.SmoothDamp(smoothPivotPosition, playerContainer.position, ref pivotVelocity, pivotSmoothTime);
+
+            if ((smoothPivotPosition - playerContainer.position).sqrMagnitude < 0.0001f)
             {
                 transitioningBack = false;
                 smoothPivotPosition = playerContainer.position;
@@ -91,7 +97,7 @@ public class CameraMovement : MonoBehaviour
         if (inCombat && !active)
         {
             transitioningBack = true;
-            smoothPivotPosition = cam.position - currentOffset;
+            smoothPivotPosition = transform.position;
         }
 
         inCombat = active;
