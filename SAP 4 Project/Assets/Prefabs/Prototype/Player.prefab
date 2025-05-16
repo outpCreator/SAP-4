@@ -241,12 +241,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  baseDamage: 5
+  baseDamage: 100
   attackRange: 0
   attackSpeed: 10
   moveSpeed: 8
   rotationSpeed: 17
   cameraTransform: {fileID: 6118752575673387928}
+  baseCooldown: 5
+  minCooldown: 3
 --- !u!114 &7079091180814260795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,6 +398,38 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 03d2add0-d222-48bc-98bb-8ae6b0a42b2c
     m_ActionName: Player/FixateRoom
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6247831581523933343}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: OnNextTarget
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 5d6c010f-6d2c-47f5-9004-ab692cfcdca3
+    m_ActionName: 'Player/NextTarget[/XInputControllerWindows/rightShoulder,/Keyboard/e]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6247831581523933343}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: OnPreviouseTarget
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 401a5bb1-8009-49b8-a24a-26202a3cc914
+    m_ActionName: 'Player/PreviouseTarget[/XInputControllerWindows/leftShoulder,/Keyboard/q]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

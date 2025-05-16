@@ -6,7 +6,7 @@ public class FightManager : MonoBehaviour
     public static FightManager Instance;
 
     [Header("Settings")]
-    public float exitStateDelay = 3f;
+    public float exitStateDelay = 1.5f;
     float timeSinceLastEnemy = 0f;
 
     // Player Components
@@ -68,13 +68,11 @@ public class FightManager : MonoBehaviour
             case FightStates.NoActiveFight:
 
                 cameraMovement.SwitchCameraMode(false);
-                print(FightStates.NoActiveFight);
 
                 break;
             case FightStates.InAFight:
 
                 cameraMovement.SwitchCameraMode(true);
-                print(FightStates.InAFight);
 
                 break;
         }
@@ -91,11 +89,22 @@ public class FightManager : MonoBehaviour
 
             if (enemy.State == EnemyCombat.EnemyState.InRange)
             {
+                //enemy.outOfRangeTimer = 0;
+
                 if (!activeEnemies.Contains(enemy))
                 {
                     activeEnemies.Add(enemy);
                 }
                 cleanedEnemies.Add(enemy);
+            }
+            else if (activeEnemies.Contains(enemy))
+            {
+                //enemy.outOfRangeTimer += Time.deltaTime;
+
+                //if (enemy.outOfRangeTimer < EnemyCombat.maxOutOfRangeTime)
+                //{
+                //    cleanedEnemies.Add(enemy);
+                //}
             }
         }
 

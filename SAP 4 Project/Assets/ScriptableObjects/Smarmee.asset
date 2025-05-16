@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 229f531a19517fd49836d6dc1135d10a, type: 3}
+  m_Name: Smarmee
+  m_EditorClassIdentifier: 
+  units: []
+  unitPrefab: {fileID: 6196220429466987877, guid: c4d95bf9a01ba9a46aef06e8b3870b45, type: 3}
+  spacing: 1.5
+  heightOffset: 0.5
+  unitScale: 1.5
