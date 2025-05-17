@@ -10,5 +10,6 @@ public class EnemyStats : MonoBehaviour
 
     public float attackDamage = 0;
     public float attackSpeed = 0;
+    public float detectionRange = 0;
     public float attackRange = 0;
 }

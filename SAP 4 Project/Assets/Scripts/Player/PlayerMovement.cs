@@ -25,7 +25,11 @@ public class PlayerMovement : MonoBehaviour
     [Header("Fighting")]
     public float baseCooldown = 5f;
     public float minCooldown = 3f;
+
     bool canAttack = true;
+
+    EnemyCombat currentTarget;
+    int targetIndex = 0;
 
     [Header("Potion")]
 
@@ -34,9 +38,6 @@ public class PlayerMovement : MonoBehaviour
 
     // Inpus
     Vector2 moveInput = Vector2.zero;
-    bool potionInput = false;
-    bool brewingInput = false;
-    bool fixateRoomInput = false;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -44,16 +45,63 @@ public class PlayerMovement : MonoBehaviour
     }
     public void OnPotion(InputAction.CallbackContext context)
     {
-        potionInput = context.action.triggered;
+        if (context.performed && currentTarget != null && canAttack)
+        {
+            currentTarget.TakeDamage(baseDamage * 5);
+            canAttack = false;
+
+            StartCoroutine(Cooldown());
+
+            Debug.Log("Angriff ausgeführt auf: " + currentTarget.name);
+        }
     }
+    public void OnNextTarget(InputAction.CallbackContext context)
+    {
+        if (context.performed && FightManager.Instance.activeEnemies.Count > 0)
+        {
+            EnemyCombat prevoiuseTarget = currentTarget;
+
+            targetIndex = (targetIndex + 1) % FightManager.Instance.activeEnemies.Count;
+            currentTarget = FightManager.Instance.activeEnemies[targetIndex];
+
+            UpdateTargetHighlight(prevoiuseTarget, currentTarget);
+
+            Debug.Log("Ziel gewechselt zu: " + currentTarget.name);
+        }
+    }
+    public void OnPreviouseTarget(InputAction.CallbackContext context)
+    {
+        if (context.performed && FightManager.Instance.activeEnemies.Count > 0)
+        {
+            EnemyCombat prevoiuseTarget = currentTarget;
+
+            targetIndex--;
+            if (targetIndex < 0) targetIndex = FightManager.Instance.activeEnemies.Count - 1;
+            currentTarget = FightManager.Instance.activeEnemies[targetIndex];
+
+            UpdateTargetHighlight(prevoiuseTarget, currentTarget);
+
+            Debug.Log("Ziel gewechselt zu: " + currentTarget.name);
+        }
+    }
+
+    void UpdateTargetHighlight(EnemyCombat previous, EnemyCombat current)
+    {
+        
+    }
+
     public void OnBrewing(InputAction.CallbackContext context)
     {
-        brewingInput = context.action.triggered;
+
     }
 
     public void OnFixateRoom(InputAction.CallbackContext context)
     {
-        fixateRoomInput = context.action.triggered;
+        if (context.performed)
+        {
+            int amount = 1;
+            PlayerUIManager.Instance.SetFixedRoomCount(amount);
+        }
     }
 
     private void Start()
@@ -66,11 +114,7 @@ public class PlayerMovement : MonoBehaviour
         if (!isFrozen || canMove)
         {
             Move();
-            FixateRoom();
-            Attack();
         }
-
-        FightCooldown();
     }
 
     void Move()
@@ -87,7 +131,18 @@ public class PlayerMovement : MonoBehaviour
 
         charController.SimpleMove(moveDirection * moveSpeed);
 
-        if (moveDirection.magnitude > 0.1f)
+        if (currentTarget != null) //<-- target
+        {
+            Vector3 targetDirection = currentTarget.transform.position - transform.position;
+            targetDirection.y = 0f;
+
+            if(targetDirection.sqrMagnitude > 0.001f)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+        }
+        else if (moveDirection.magnitude > 0.1f) //<-- no target
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
@@ -108,46 +163,17 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void Attack()
+    IEnumerator Cooldown()
     {
-        if(canAttack)
-        {
-            float attackDamage = baseDamage;
+        yield return new WaitForSeconds(baseCooldown);
 
-            if (potionInput)
-            {
-                EnemyCombat enemy = FindFirstObjectByType<EnemyCombat>();
-                enemy.health -= attackDamage;
-
-                canAttack = false;
-
-                print($"Enemy {enemy} took {attackDamage} and is now at {enemy.health} health!");
-            }
-        }
+        canAttack = true;
+        print("You can attack!");
     }
 
-    void FightCooldown()
+    public void TakeDamage(float amount)
     {
-        if (!canAttack)
-        {
-            float time = 0f;
-
-            time += Time.deltaTime;
-
-            if (time >= baseCooldown)
-            {
-                canAttack = true;
-            }
-        }
-    }
-
-    void FixateRoom()
-    {
-        if (fixateRoomInput)
-        {
-            int amount = 1;
-            PlayerUIManager.Instance.SetFixedRoomCount(amount);
-        }
+        health -= amount;
     }
 
     public void OnAfterSpawn(Vector3 position, Quaternion rotation)
