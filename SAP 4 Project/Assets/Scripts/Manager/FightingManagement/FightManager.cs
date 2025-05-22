@@ -5,25 +5,14 @@ public class FightManager : MonoBehaviour
 {
     public static FightManager Instance;
 
-    [Header("Settings")]
-    public float exitStateDelay = 1.5f;
-    float timeSinceLastEnemy = 0f;
-
     // Player Components
     PlayerMovement playerMovement;
     CameraMovement cameraMovement;
-
-    [Header("Camera Settings")]
-    public Vector3 fightCameraPos = new Vector3(0, 6, -4);
-    public Vector3 fightCameraRot = new Vector3(30, 0, 0);
-
-    public float camTransitionSpeed = 5f;
 
     [Header("Enemies")]
     EnemyCombat[] allEnemies;
     public List<EnemyCombat> activeEnemies = new List<EnemyCombat>();
 
-    // Fight States
     public enum FightStates
     {
         NoActiveFight,
@@ -89,7 +78,7 @@ public class FightManager : MonoBehaviour
 
             if (enemy.State == EnemyCombat.EnemyState.InRange)
             {
-                //enemy.outOfRangeTimer = 0;
+                enemy.outOfRangeTimer = 0;
 
                 if (!activeEnemies.Contains(enemy))
                 {
@@ -99,12 +88,12 @@ public class FightManager : MonoBehaviour
             }
             else if (activeEnemies.Contains(enemy))
             {
-                //enemy.outOfRangeTimer += Time.deltaTime;
+                enemy.outOfRangeTimer += Time.deltaTime;
 
-                //if (enemy.outOfRangeTimer < EnemyCombat.maxOutOfRangeTime)
-                //{
-                //    cleanedEnemies.Add(enemy);
-                //}
+                if (enemy.outOfRangeTimer < EnemyCombat.maxOutOfRangeTime)
+                {
+                    cleanedEnemies.Add(enemy);
+                }
             }
         }
 
@@ -112,16 +101,11 @@ public class FightManager : MonoBehaviour
 
         if (activeEnemies.Count > 0)
         {
-            timeSinceLastEnemy = 0;
             state = FightStates.InAFight;
         }
         else
         {
-            timeSinceLastEnemy += Time.deltaTime;
-            if (timeSinceLastEnemy >= exitStateDelay)
-            {
-                state = FightStates.NoActiveFight;
-            }
+            state = FightStates.NoActiveFight;
         }
     }
 }

@@ -201,7 +201,7 @@ public class LevelManager : MonoBehaviour
     {
         if (!spawnedRooms.ContainsKey(gridCoord))
         {
-            spawnedRooms.Add(gridCoord, roomInstance); // <-- Vielleicht noch transform.position!!
+            spawnedRooms.Add(gridCoord, roomInstance);
         }
     }
 

@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -11,11 +10,14 @@ public class EnemyCombat : MonoBehaviour
     public Transform homePoint;
     public float health;
 
+    public float outOfRangeTimer = 0f;
+    public static float maxOutOfRangeTime = 1f;
+
     [Header("Player")]
     public Transform player;
     public Vector3 playerPosition;
 
-    public enum EnemyState { Idle, Follow, InRange, Attack, Died}
+    public enum EnemyState { Idle, Follow, InRange, Died}
     public EnemyState State = EnemyState.Idle;
 
     public void SetUpEnemy()
@@ -27,8 +29,6 @@ public class EnemyCombat : MonoBehaviour
         behaviour.Initialize(this, stats);
 
         health = stats.health;
-
-        Debug.Log($"Enemy {this.name} was set up!");
     }
 
     private void Update()
@@ -53,7 +53,7 @@ public class EnemyCombat : MonoBehaviour
                     State = EnemyState.Follow;
                 }
 
-                behaviour.Idle();
+                behaviour.Action(State);
 
                 break;
 
@@ -69,25 +69,24 @@ public class EnemyCombat : MonoBehaviour
                     State = EnemyState.Idle;
                 }
 
-                behaviour.Follow();
+                behaviour.Action(State);
 
                 break;
 
             case EnemyState.InRange:
 
-                behaviour.InRange();
+                if (Vector3.Distance(enemyPos, playerPos) > stats.attackRange)
+                {
+                    State = EnemyState.Follow;
+                }
 
-                break;
-
-            case EnemyState.Attack:
-
-                behaviour.Attack();
+                behaviour.Action(State);
 
                 break;
 
             case EnemyState.Died:
 
-                behaviour.Die();
+                behaviour.Action(State);
 
                 break;
         }

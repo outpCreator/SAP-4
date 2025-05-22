@@ -155,6 +155,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 945ade8df383ad844bd7695245ce6660, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  leader: {fileID: 0}
+  isLeader: 0
+  followSpeed: 3
+  followDistance: 2
+  followDelay: 0.2
+  historyLength: 20
   groundCheck: {fileID: 9019063841745188573}
   groundCheckDistance: 2
   groundLayer:

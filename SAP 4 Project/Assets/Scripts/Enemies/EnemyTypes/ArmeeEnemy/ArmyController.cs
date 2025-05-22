@@ -1,82 +1,117 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
+using UnityEngine.AI;
 
 public class ArmyController : MonoBehaviour
 {
-    public ArmyEnemy config;
+    EnemyCombat combat;
     public GameObject unitPrefab;
     public Transform spawnPoint;
 
+    [Header("Unit Settings")]
+    [SerializeField] float maxScale = 1f;
+    [SerializeField] float minScale = 0.4f;
+
     List<ArmyUnit> units = new List<ArmyUnit>();
 
-    private void Start()
+    [Header("Patroulling")]
+    [SerializeField] List<Transform> patrolPoints = new List<Transform>();
+    [SerializeField] float patrolWaitTime = 2f;
+
+    int patrolIndex = 0;
+    float waitTimer = 0;
+    bool isWaiting = false;
+
+
+
+    public void Initialize(EnemyCombat enemyCombat)
     {
-        AdjustUnitCount(config.maxSplits);
+        combat = enemyCombat;
+    }
+
+    public void IdleBehaviour()
+    {
+        AdjustUnitCount(5);
+
+        if (patrolPoints == null || patrolPoints.Count == 0) return;
+
+        Transform currentTarget = patrolPoints[patrolIndex];
+
+        if (isWaiting)
+        {
+            waitTimer += Time.deltaTime;
+            if (waitTimer >= patrolWaitTime)
+            {
+                isWaiting = false;
+                waitTimer = 0;
+
+                patrolIndex = (patrolIndex + 1) % patrolPoints.Count;
+            }
+            return;
+        }
+
+        combat.agent.SetDestination(currentTarget.position);
+
+        float distance = Vector3.Distance(transform.position, currentTarget.position);
+        if (distance < 1f)
+        {
+            isWaiting = true;
+        }
+    }
+
+    public void FollowBehaviour()
+    {
+        combat.agent.SetDestination(combat.playerPosition);
+    }
+
+    public void InRangeBehaviour()
+    {
+
+    }
+
+    public void DiedBehaviour()
+    {
+
     }
 
     public void AdjustUnitCount(int targetCount)
     {
-        int current = units.Count;
-
-        if (targetCount > current)
+        while (units.Count > targetCount)
         {
-            int toCreate = targetCount - current;
-            for (int i = 0; i < toCreate; i++)
-            {
-                Vector3 spawnPos = transform.localPosition + transform.right * (i - targetCount / 2f);
-                GameObject unitGO = Instantiate(unitPrefab, spawnPos, Quaternion.identity, spawnPoint);
-                ArmyUnit unit = unitGO.GetComponent<ArmyUnit>();
-                unit.Initialize(this);
-                units.Add(unit);
-
-            }
-        }
-        else if (targetCount < current)
-        {
-            int toRemove = current - targetCount;
-            for (int i = 0;i < toRemove; i++)
-            {
-                ArmyUnit unit = units[^1];
-                units.RemoveAt(units.Count - 1);
-                Destroy(unit.gameObject);
-            }
+            Destroy(units[^1].gameObject);
+            units.RemoveAt(units.Count - 1);
         }
 
-        RepositionUnits();
+        while (units.Count < targetCount)
+        {
+            int index = units.Count;
+
+            Vector3 spawnOffset = -spawnPoint.forward * index * 2;
+            Vector3 spawnPos = spawnPoint.position + spawnOffset;
+
+            GameObject unitGO = Instantiate(unitPrefab, spawnPos, Quaternion.identity, spawnPoint);
+            ArmyUnit unit = unitGO.GetComponent<ArmyUnit>();
+
+            Transform followTarget = (index == 0) ? null : units[index - 1].transform;
+            unit.Initialize(this, followTarget);
+
+            units.Add(unit);
+        }
+
         AdjustUnitScale();
     }
-
-    void RepositionUnits()
-    {
-        float spacing = 1.5f;
-        int count = units.Count;
-        float offset = -(count - 1) * spacing / 2f;
-
-        for (int i = 0; i < count; i++)
-        {
-            Vector3 localPos = new Vector3(offset + i * spacing, 0, 0);
-            units[i].transform.localPosition = localPos;
-        }
-    }
-
+    
     void AdjustUnitScale()
     {
-        int count = units.Count;
+        int count = Mathf.Max(units.Count, 1);
+        float t = Mathf.Clamp01(1f / count);
+        float scale = Mathf.Lerp(minScale, maxScale, t);
 
-        float baseScale = Mathf.Lerp(0.4f, 1f, 1f / count);
+        Vector3 targetScale = Vector3.one * scale;
 
         foreach (var unit in units)
         {
-            unit.SetScale(Vector3.one * baseScale, 0.3f);
+            unit.SetScale(targetScale, 0.3f);
         }
     }
-
-    public void OnUnitDestroyed(ArmyUnit unit)
-    {
-        units.Remove(unit);
-        RepositionUnits();
-    }
-
-    public List<ArmyUnit> GetUnits() => units;
 }
