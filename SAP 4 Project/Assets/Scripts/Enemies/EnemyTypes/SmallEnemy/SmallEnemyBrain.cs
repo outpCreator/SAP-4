@@ -14,7 +14,7 @@ public class SmallEnemyBrain : EnemyBehaviour
         stats = enemyStats;
 
         behaviour = combat.GetComponent<SmallEnemyBehaviour>();
-        behaviour.Initialize(combat);
+        behaviour.Initialize(combat, stats);
     }
 
     public override void Action(EnemyCombat.EnemyState state)

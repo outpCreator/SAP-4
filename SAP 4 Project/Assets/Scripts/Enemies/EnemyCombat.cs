@@ -10,6 +10,8 @@ public class EnemyCombat : MonoBehaviour
     public Transform homePoint;
     public float health;
 
+    public Vector3 enemyPosition;
+
     public float outOfRangeTimer = 0f;
     public static float maxOutOfRangeTime = 1f;
 
@@ -38,6 +40,7 @@ public class EnemyCombat : MonoBehaviour
         Vector3 playerPos = player.position;
         playerPosition = playerPos;
         Vector3 enemyPos = transform.position;
+        enemyPosition = enemyPos;
 
         if (health <= 0)
         {
@@ -79,8 +82,11 @@ public class EnemyCombat : MonoBehaviour
                 {
                     State = EnemyState.Follow;
                 }
-
-                behaviour.Action(State);
+                else
+                {
+                    behaviour.Action(State);
+                }
+                
 
                 break;
 
