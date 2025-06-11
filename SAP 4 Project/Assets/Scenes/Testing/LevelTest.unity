@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: d963f7e5a90d3f442a94a7f9912b8ec6, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6a8604da9b200c4d8ab6916ead7527b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rooms: []
   roomPrefabs:
   - {fileID: 1862561490422721875, guid: 1b28d7e94648f864f96ee098a3fef017, type: 3}
   startRoomPrefab: {fileID: 8040090346732638718, guid: 122326b2631488a4da160df1bd532363, type: 3}

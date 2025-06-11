@@ -131,6 +131,8 @@ public class SmallEnemyBehaviour : MonoBehaviour
 
         print("Angriff");
 
+        PlayerManager.Instance.playerMovementScript.TakeDamage(stats.attackDamage);
+
         yield return new WaitForSeconds(1);
 
         isAttacking = false;

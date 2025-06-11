@@ -39,6 +39,9 @@ public class PlayerMovement : MonoBehaviour
     // Inpus
     Vector2 moveInput = Vector2.zero;
 
+    // FX
+    [SerializeField] ParticleSystem fxDamaged, fxAttacking;
+
     public void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
@@ -48,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
         if (context.performed && currentTarget != null && canAttack)
         {
             currentTarget.TakeDamage(baseDamage * 5);
+            fxAttacking.Play();
             canAttack = false;
 
             StartCoroutine(Cooldown());
@@ -173,6 +177,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        fxDamaged.Play();
         health -= amount;
     }
 
