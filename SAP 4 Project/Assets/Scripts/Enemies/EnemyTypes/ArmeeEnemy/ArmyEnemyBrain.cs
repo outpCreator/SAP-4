@@ -2,7 +2,7 @@ using System.Drawing.Printing;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EnemyAI/ArmyEnemyBrain")]
-public class ArmyEnemyBrain : EnemyBehaviour
+public class ArmyEnemyBrain : EnemyBehaviourDefinition
 {
     [Header("Army Settings")]
     public int maxSplits = 5;
@@ -12,16 +12,16 @@ public class ArmyEnemyBrain : EnemyBehaviour
     EnemyStats stats;
     ArmyController army;
 
-    public override void Initialize(EnemyCombat enemyCombat, EnemyStats enemyStats)
-    {
-        combat = enemyCombat;
-        stats = enemyStats;
-        army = combat.GetComponent<ArmyController>();
+    //public override void Initialize(EnemyCombat enemyCombat, EnemyStats enemyStats)
+    //{
+    //    combat = enemyCombat;
+    //    stats = enemyStats;
+    //    army = combat.GetComponent<ArmyController>();
 
-        army.Initialize(combat);
-    }
+    //    army.Initialize(combat);
+    //}
 
-    public override void Action(EnemyCombat.EnemyState state)
+    public override void Action(SmallEnemyBehaviour behaviour, EnemyCombat.EnemyState state)
     {
         if (state == EnemyCombat.EnemyState.Idle)
         {

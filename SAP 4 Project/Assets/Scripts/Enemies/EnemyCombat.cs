@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.AI;
+using static EnemyCombat;
 
 public class EnemyCombat : MonoBehaviour
 {
     [Header("Enemy")]
-    public EnemyBehaviour behaviour;
+    public EnemyBehaviourDefinition behaviour;
+    public SmallEnemyBehaviour enemyBehaviour;
     public EnemyStats stats;
     public NavMeshAgent agent;
     public Transform homePoint;
@@ -27,8 +29,7 @@ public class EnemyCombat : MonoBehaviour
         if (agent == null) agent = GetComponent<NavMeshAgent>();
         if (player == null) player = PlayerManager.Instance.playerTransform;
         if (stats == null) stats = GetComponent<EnemyStats>();
-
-        behaviour.Initialize(this, stats);
+        enemyBehaviour = GetComponent<SmallEnemyBehaviour>();
 
         health = stats.health;
     }
@@ -56,7 +57,7 @@ public class EnemyCombat : MonoBehaviour
                     State = EnemyState.Follow;
                 }
 
-                behaviour.Action(State);
+                behaviour.Action(enemyBehaviour, State );
 
                 break;
 
@@ -72,7 +73,7 @@ public class EnemyCombat : MonoBehaviour
                     State = EnemyState.Idle;
                 }
 
-                behaviour.Action(State);
+                behaviour.Action(enemyBehaviour, State);
 
                 break;
 
@@ -84,7 +85,7 @@ public class EnemyCombat : MonoBehaviour
                 }
                 else
                 {
-                    behaviour.Action(State);
+                    behaviour.Action(enemyBehaviour, State);
                 }
                 
 
@@ -92,7 +93,7 @@ public class EnemyCombat : MonoBehaviour
 
             case EnemyState.Died:
 
-                behaviour.Action(State);
+                behaviour.Action(enemyBehaviour, State);
 
                 break;
         }

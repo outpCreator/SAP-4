@@ -1,23 +1,10 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EnemyAI/SmallEnemyBrain")]
-public class SmallEnemyBrain : EnemyBehaviour
+public class SmallEnemyBrain : EnemyBehaviourDefinition
 {
-    EnemyCombat combat;
-    EnemyStats stats;
 
-    SmallEnemyBehaviour behaviour;
-
-    public override void Initialize(EnemyCombat enemyCombat, EnemyStats enemyStats)
-    {
-        combat = enemyCombat;
-        stats = enemyStats;
-
-        behaviour = combat.GetComponent<SmallEnemyBehaviour>();
-        behaviour.Initialize(combat, stats);
-    }
-
-    public override void Action(EnemyCombat.EnemyState state)
+    public override void Action(SmallEnemyBehaviour behaviour,  EnemyCombat.EnemyState state)
     {
         if (state == EnemyCombat.EnemyState.Idle)
         {

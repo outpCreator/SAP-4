@@ -223,6 +223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviour: {fileID: 11400000, guid: 164ed65e6ad9013499c99d665d7fe990, type: 2}
+  enemyBehaviour: {fileID: 0}
   stats: {fileID: 11400000, guid: abc0a055235d48141a56b3bfe818a2ae, type: 2}
   agent: {fileID: 238812380}
   homePoint: {fileID: 300681974}
@@ -244,15 +245,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5f4f919b35b98844828400960f33442, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleRange: 3
-  idleSpeed: 4
-  chaseTime: 3
-  directionChangeTimer: 1
-  orbitDirectionChange: 1
-  currentOrbitSpeed: 2
-  directionChangeInterval: 2
-  orbitSpeedMin: 1.5
-  orbitSpeedMax: 2.5
+  idleRange: 0
+  idleSpeed: 0
+  chaseTime: 0
+  directionChangeTimer: 3
+  orbitDirectionChange: 0
+  currentOrbitSpeed: 0
+  directionChangeInterval: 1
+  orbitSpeedMin: 1
+  orbitSpeedMax: 2
 --- !u!136 &238812383
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -978,6 +979,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviour: {fileID: 11400000, guid: 164ed65e6ad9013499c99d665d7fe990, type: 2}
+  enemyBehaviour: {fileID: 0}
   stats: {fileID: 11400000, guid: abc0a055235d48141a56b3bfe818a2ae, type: 2}
   agent: {fileID: 2019202806}
   homePoint: {fileID: 213501889}
@@ -999,15 +1001,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5f4f919b35b98844828400960f33442, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleRange: 3
-  idleSpeed: 4
-  chaseTime: 3
-  directionChangeTimer: 1
-  orbitDirectionChange: 1
-  currentOrbitSpeed: 2
-  directionChangeInterval: 2
-  orbitSpeedMin: 1.5
-  orbitSpeedMax: 2.5
+  idleRange: 0
+  idleSpeed: 0
+  chaseTime: 0
+  directionChangeTimer: 3
+  orbitDirectionChange: 0
+  currentOrbitSpeed: 0
+  directionChangeInterval: 1
+  orbitSpeedMin: 1
+  orbitSpeedMax: 2
 --- !u!136 &2019202809
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1400,6 +1402,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviour: {fileID: 11400000, guid: 164ed65e6ad9013499c99d665d7fe990, type: 2}
+  enemyBehaviour: {fileID: 0}
   stats: {fileID: 11400000, guid: abc0a055235d48141a56b3bfe818a2ae, type: 2}
   agent: {fileID: 2088594324}
   homePoint: {fileID: 850904764}
@@ -1497,15 +1500,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5f4f919b35b98844828400960f33442, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleRange: 3
-  idleSpeed: 4
-  chaseTime: 3
-  directionChangeTimer: 1
-  orbitDirectionChange: 1
-  currentOrbitSpeed: 2
-  directionChangeInterval: 2
-  orbitSpeedMin: 1.5
-  orbitSpeedMax: 2.5
+  idleRange: 0
+  idleSpeed: 0
+  chaseTime: 0
+  directionChangeTimer: 3
+  orbitDirectionChange: 0
+  currentOrbitSpeed: 0
+  directionChangeInterval: 1
+  orbitSpeedMin: 1
+  orbitSpeedMax: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

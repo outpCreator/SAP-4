@@ -5,7 +5,7 @@ using UnityEngine;
 public class SmallEnemyBehaviour : MonoBehaviour
 {
     EnemyCombat combat;
-    EnemyStats stats;
+    EnemyStats stats { get { return combat.stats; } }
 
     [Header("Idle Settings")]
     [SerializeField] float idleRange = 3f;
@@ -35,11 +35,11 @@ public class SmallEnemyBehaviour : MonoBehaviour
 
     float coolDownTimer = 0f;
 
-    public void Initialize(EnemyCombat enemyCombat, EnemyStats enemyStats)
+    private void Awake()
     {
-        combat = enemyCombat;
-        stats = enemyStats;
+        Debug.Assert(combat = GetComponent<EnemyCombat>());
     }
+
 
     public void IdleBehaviour()
     {
