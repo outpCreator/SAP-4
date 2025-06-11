@@ -91,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateTargetHighlight(EnemyCombat previous, EnemyCombat current)
     {
-        
+       
     }
 
     public void OnBrewing(InputAction.CallbackContext context)
@@ -118,6 +118,12 @@ public class PlayerMovement : MonoBehaviour
         if (!isFrozen || canMove)
         {
             Move();
+        }
+
+        if(currentTarget)
+        {
+            Color color = currentTarget.State == EnemyCombat.EnemyState.Died ? Color.black : Color.red;
+            GameManager.Instance.AddOutlineObject(currentTarget.GetComponentInChildren<MeshFilter>(), color, 0.0f);
         }
     }
 

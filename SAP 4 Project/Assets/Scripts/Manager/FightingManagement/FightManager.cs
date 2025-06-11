@@ -69,7 +69,7 @@ public class FightManager : MonoBehaviour
 
     void UpdateFightState()
     {
-        //HashSet<EnemyCombat> 
+
         List<EnemyCombat> cleanedEnemies = new List<EnemyCombat>();
 
         foreach (var enemy in allEnemies)
