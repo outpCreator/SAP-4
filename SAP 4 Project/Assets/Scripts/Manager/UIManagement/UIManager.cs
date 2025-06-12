@@ -13,12 +13,7 @@ public class UIManager : MonoBehaviour
     InputType currentInput = InputType.KeyboardMouse;
 
     [Header("UI Menus")]
-    public GameObject StartScreen;
-    public GameObject Inventory;
-    public GameObject InGameUI;
-    public GameObject HubUI;
-    public GameObject QuickSelect;
-    public GameObject QuickCraft;
+    public List<GameObject> menus = new List<GameObject>();
 
     [Header("UI Components")]
     public List<GameObject> InputsInfo = new List<GameObject>();
@@ -74,6 +69,15 @@ public class UIManager : MonoBehaviour
     {
         CheckInputs();
 
+    }
+
+    public void SetCallerActive(GameObject caller)
+    {
+        foreach (GameObject menu in menus)
+        {
+            menu.SetActive(false);
+            menu.SetActive(caller);
+        }
     }
 
     void CheckInputs()
