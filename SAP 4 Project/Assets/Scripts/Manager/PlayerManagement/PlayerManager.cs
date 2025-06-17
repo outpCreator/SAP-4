@@ -76,11 +76,13 @@ public class PlayerManager : MonoBehaviour
 
     public void OnSceneLoaded(string entryId)
     {
+        print("listen");
+
         GameObject spawnPoint = GameObject.Find(entryId);
 
         if (spawnPoint == null)
         {
-            spawnPoint = GameObject.Find("SpawnPoint");
+            spawnPoint = GameObject.FindWithTag("SpawnPoint");
         }
 
         if (spawnPoint != null)

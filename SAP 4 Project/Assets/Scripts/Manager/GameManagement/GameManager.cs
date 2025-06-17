@@ -5,6 +5,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    GameObject spawnPoint;
+
     public Material outlineMaterial;
     private void Awake()
     {
@@ -26,7 +28,11 @@ public class GameManager : MonoBehaviour
         if (LevelManager.Instance == null || LevelSpawner.Instance == null && PlayerManager.Instance != null)
         {
             Debug.Log("Not in a Level! Initialized from Game Manger");
+
+            spawnPoint = GameObject.FindWithTag("SpawnPoint");
+
             PlayerManager.Instance.InitPlayer();
+            PlayerManager.Instance.SetSpawnPoint(spawnPoint.transform);
         }
 
         if (FightManager.Instance != null)
