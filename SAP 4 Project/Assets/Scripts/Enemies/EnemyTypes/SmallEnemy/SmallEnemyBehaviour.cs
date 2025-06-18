@@ -140,6 +140,6 @@ public class SmallEnemyBehaviour : MonoBehaviour
 
     public void DiedBehaviour()
     {
-
+        Destroy(gameObject);
     }
 }

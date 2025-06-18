@@ -243,7 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  baseDamage: 100
+  baseDamage: 10
   attackRange: 0
   attackSpeed: 10
   moveSpeed: 8
@@ -251,9 +251,11 @@ MonoBehaviour:
   cameraTransform: {fileID: 6118752575673387928}
   baseCooldown: 5
   minCooldown: 3
-  potionIngredience: 0
-  potionMixture: 0
-  potion: 0
+  potionIngredience: 5
+  potionMixture: 5
+  potion: 10
+  completedRooms: 0
+  interaction: 0
   fxDamaged: {fileID: 6081059301097165699}
   fxAttacking: {fileID: 5432817853369326755}
 --- !u!114 &7079091180814260795

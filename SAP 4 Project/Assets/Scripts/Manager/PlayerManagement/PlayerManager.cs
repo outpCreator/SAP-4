@@ -95,6 +95,11 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    public void IncreaseCompletedRoomsCount()
+    {
+        playerMovementScript.completedRooms++;
+    }
+
     private void OnDestroy()
     {
         SceneLoader.Instance.onSceneChanged.RemoveListener(OnSceneLoaded);

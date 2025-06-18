@@ -37,6 +37,9 @@ public class PlayerMovement : MonoBehaviour
     public int potion = 0;
 
     [Header("Brewing")]
+
+    [Header("Level")]
+    public int completedRooms = 0;
     
 
     // Inputs
@@ -52,15 +55,18 @@ public class PlayerMovement : MonoBehaviour
     }
     public void OnPotion(InputAction.CallbackContext context)
     {
-        if (context.performed && currentTarget != null && canAttack)
+        if (context.performed && currentTarget != null)
         {
-            currentTarget.TakeDamage(baseDamage * 5);
-            fxAttacking.Play();
-            canAttack = false;
+            if (potion != 0)
+            {
+                currentTarget.TakeDamage(baseDamage);
+                fxAttacking.Play();
+                canAttack = false;
 
-            StartCoroutine(Cooldown());
+                StartCoroutine(Cooldown());
 
-            Debug.Log("Angriff ausgeführt auf: " + currentTarget.name);
+                Debug.Log("Angriff ausgeführt auf: " + currentTarget.name);
+            }
         }
     }
     public void OnNextTarget(InputAction.CallbackContext context)
@@ -91,7 +97,12 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnBrewing(InputAction.CallbackContext context)
     {
-
+        if (potionIngredience != 0 && potionMixture != 0)
+        {
+            potionIngredience--;
+            potionMixture--;
+            potion++;
+        }
     }
 
     public void OnInteraction(InputAction.CallbackContext context)
@@ -123,7 +134,7 @@ public class PlayerMovement : MonoBehaviour
         if(currentTarget)
         {
             Color color = currentTarget.State == EnemyCombat.EnemyState.Died ? Color.black : Color.red;
-            GameManager.Instance.AddOutlineObject(currentTarget.GetComponentInChildren<MeshFilter>(), color, 0.0f);
+            FightManager.Instance.AddOutlineObject(currentTarget.GetComponentInChildren<MeshFilter>(), color, 0.0f);
         }
     }
 

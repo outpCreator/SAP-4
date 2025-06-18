@@ -726,6 +726,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46916e9d42ac32441b1524ac8aac312a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: -876546973899608171, guid: c7de47cacded06141a32c15bf6ba7736, type: 3}
   activeEnemies: []
   state: 0
 --- !u!223 &395257633810066105
@@ -841,7 +842,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fafeff69335a3cb479bd931eddf991e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineMaterial: {fileID: 2100000, guid: d3c9ec2961567964d9fa71c16ac48e02, type: 2}
 --- !u!222 &3057634529607297962
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -5,8 +5,7 @@ public class LevelRoom : MonoBehaviour
 {
     public GameObject chest;
 
-    public List<GameObject> enemies = new List<GameObject>();
-    int enemieCount;
+    public bool enemiesCleared;
 
     private void Start()
     {
@@ -15,11 +14,10 @@ public class LevelRoom : MonoBehaviour
 
     private void Update()
     {
-        enemieCount = enemies.Count;
-
-        if (enemieCount <= 0)
+        if (enemiesCleared)
         {
             chest.SetActive(true);
+            PlayerManager.Instance.IncreaseCompletedRoomsCount();
         }
     }
 }
