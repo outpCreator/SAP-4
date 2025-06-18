@@ -32,12 +32,16 @@ public class PlayerMovement : MonoBehaviour
     int targetIndex = 0;
 
     [Header("Potion")]
+    public int potionIngredience = 0;
+    public int potionMixture = 0;
+    public int potion = 0;
 
     [Header("Brewing")]
     
 
-    // Inpus
+    // Inputs
     Vector2 moveInput = Vector2.zero;
+    public bool interaction = false;
 
     // FX
     [SerializeField] ParticleSystem fxDamaged, fxAttacking;
@@ -68,8 +72,6 @@ public class PlayerMovement : MonoBehaviour
             targetIndex = (targetIndex + 1) % FightManager.Instance.activeEnemies.Count;
             currentTarget = FightManager.Instance.activeEnemies[targetIndex];
 
-            UpdateTargetHighlight(prevoiuseTarget, currentTarget);
-
             Debug.Log("Ziel gewechselt zu: " + currentTarget.name);
         }
     }
@@ -83,20 +85,18 @@ public class PlayerMovement : MonoBehaviour
             if (targetIndex < 0) targetIndex = FightManager.Instance.activeEnemies.Count - 1;
             currentTarget = FightManager.Instance.activeEnemies[targetIndex];
 
-            UpdateTargetHighlight(prevoiuseTarget, currentTarget);
-
             Debug.Log("Ziel gewechselt zu: " + currentTarget.name);
         }
-    }
-
-    void UpdateTargetHighlight(EnemyCombat previous, EnemyCombat current)
-    {
-       
     }
 
     public void OnBrewing(InputAction.CallbackContext context)
     {
 
+    }
+
+    public void OnInteraction(InputAction.CallbackContext context)
+    {
+        interaction = context.performed;
     }
 
     public void OnFixateRoom(InputAction.CallbackContext context)
